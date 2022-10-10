@@ -2,4 +2,4 @@ def main(hop):
 	return hop
 
 def wololo():
-	return "mama cita oefeo"
+	return "why merde"
