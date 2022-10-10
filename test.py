@@ -2,4 +2,6 @@ def main(hop):
 	return hop
 
 def wololo():
-	return "why merde"
+	x=2
+	if x ==3:
+		return x
