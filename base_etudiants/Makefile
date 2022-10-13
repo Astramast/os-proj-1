@@ -4,6 +4,7 @@ COMPILER=g++
 
 main: main.cpp student.o parsing.o db.o query.o
 	${COMPILER} -o tinydb main.cpp parsing.o student.o db.o query.o ${FLAGS}
+	rm *.o
 
 run:
 	make main && ./tinydb
