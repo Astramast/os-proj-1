@@ -33,9 +33,20 @@ void db_load(database_t *db, const char *path) {
 }
 
 void db_init(database_t *db) {
-  // Your code here
+	db->data = (student_t*) malloc(sizeof(student_t)*10000);
+	if (db->data == NULL){
+		printf("DB's size too large TwT'");
+	}
+	db->psize = 10000*sizeof(student_t);
+	db->lsize = 0;
 }
 
 void db_add(database_t *db, student_t student) {
-  // Your code here
+	if (db->lsize*sizeof(student_t) == db->psize){db_extend_memory(db);}
+	db->data[db->lsize] = student;
+	db->lsize++;
+}
+
+void db_extend_memory(database_t *db){
+	//TODO
 }
