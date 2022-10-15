@@ -21,7 +21,6 @@ void student_to_str(char* buffer, student_t* student) {
   <<student->birthdate.tm_mday<<"/"<<student->birthdate.tm_mon<<"/"<<student->birthdate.tm_year;
   string temp=out.str();//temporary value to make the conversion simpler
   buffer=const_cast<char*>(temp.c_str());
-  cout<<buffer<<endl;
   //ostringstream is a function to add multiples things to a string in output
   
 }
