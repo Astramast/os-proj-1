@@ -4,12 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include <stdbool.h>
 
 void student_to_str(char* buffer, student_t* student) {
   unsigned long len=sizeof(student_t);
   buffer= malloc(len);
-  char str[32];
   sprintf(buffer,"id: %u First name: %s Last name: %s section: %s Birthdate: %d /%d /%d ", student->id, student->fname, student->lname, student->section, 
                                      student->birthdate.tm_mday, student->birthdate.tm_mon, student->birthdate.tm_year);                                               
 }
