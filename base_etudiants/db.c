@@ -39,3 +39,4 @@ void db_init(database_t *db) {
 void db_add(database_t *db, student_t student) {
   // Your code here
 }
+

@@ -73,3 +73,4 @@ bool parse_selectors(char* query, char* field, char* value) {
     strcpy(value, token);
     return true;
 }
+

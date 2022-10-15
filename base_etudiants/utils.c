@@ -48,3 +48,5 @@ void log_query(query_result_t* result) {
     fprintf(stderr, "Unrecognized field in query %s\n", result->query);
   }
 }
+
+

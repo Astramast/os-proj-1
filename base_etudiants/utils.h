@@ -36,3 +36,4 @@ size_t safe_write(int fd, const void *buffer, size_t nbytes);
 void log_query(query_result_t *result);
 
 #endif  // _UTILS_H
+

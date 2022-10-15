@@ -29,3 +29,4 @@ void query_result_init(query_result_t* result, const char* query);
 void query_result_add(query_result_t* result, student_t s);
 
 #endif
+
