@@ -48,5 +48,10 @@ void db_add(database_t *db, student_t student) {
 }
 
 void db_extend_memory(database_t *db){
-	//TODO
+	student_t* temp = NULL;
+	temp = new student_t[2*(db->psize)];
+	memcpy(temp, db->data, sizeof(student_t)*db->lsize);
+	free(db->data);
+	db->data = temp;
+	db->psize = 2*db->psize;
 }
