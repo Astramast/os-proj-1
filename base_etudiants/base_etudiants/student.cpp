@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <sstream>
 using namespace std;
 
 void student_to_str(char* buffer, student_t* student) {
@@ -13,12 +14,16 @@ void student_to_str(char* buffer, student_t* student) {
    *                                                                                           about a student in the data base
    * 
    */
-  unsigned long len=sizeof(student_t);
+  unsigned long len=sizeof(student_t)+100;
   buffer= new char[len];
-  buffer="id: "+student->id+ " First Name: "+student->fname+ " Last Name: "+ student->lname +" Section: "+ student->section+" Birthdate: "+
-                                     student->birthdate.tm_mday+"/" +student->birthdate.tm_mon+"/"+student->birthdate.tm_year;
-  printf("%s\n", buffer);
-  //sprintf: function to add multiples things in a variable as strings       
+  ostringstream out;
+  out<<"Id: "<<student->id<<", First Name: "<<student->fname<<", last Name: "<<student->lname<<", Section: "<<student->section<<", Birthdate: "
+  <<student->birthdate.tm_mday<<"/"<<student->birthdate.tm_mon<<"/"<<student->birthdate.tm_year;
+  string temp=out.str();//temporary value to make the conversion simpler
+  buffer=const_cast<char*>(temp.c_str());
+  cout<<buffer<<endl;
+  //ostringstream is a function to add multiples things to a string in output
+  
 }
 
 int student_equals(student_t* student_1, student_t* student_2) {
@@ -42,23 +47,5 @@ int student_equals(student_t* student_1, student_t* student_2) {
       }
     }
   }
-  return 0;
-}
-
-
-int main(){
-
-  student_t etudiant1={5,"Tibo","malaga","info"};
-  etudiant1.birthdate.tm_mday=2;
-  etudiant1.birthdate.tm_mon=4;
-  etudiant1.birthdate.tm_year=2001;
-
-  student_t etudiant2={5,"Tibo","malaga","info"};
-  etudiant2.birthdate.tm_mday= 2;
-  etudiant2.birthdate.tm_mon= 4;
-  etudiant2.birthdate.tm_year= 2001;
-
-  student_to_str("", &etudiant1);
-  cout<<student_equals(&etudiant1,&etudiant2)<<endl;
   return 0;
 }
