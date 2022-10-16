@@ -13,7 +13,7 @@ void insert(student_t* student, database_t* data_base){
       }
     }
     db_add(data_base,*student); 
-    cout<<"student inserted with succes"<<endl;
+    cout<<"student inserted with success"<<endl;
 }
 tuple<bool,string> data_research(string data_type,student_t* student){
     bool data_find=false;
