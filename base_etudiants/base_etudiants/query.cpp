@@ -1,6 +1,7 @@
 #include "query.h"
 #include <time.h>
 #include <string.h>
+#include <cstring>
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -14,30 +15,30 @@ void insert(student_t* student, database_t* data_base){
     db_add(data_base,*student); 
     cout<<"student inserted with succes"<<endl;
 }
-bool data_research_validity(string data_type,student_t* student){
+tuple<bool,string> data_research(string data_type,student_t* student){
     bool data_find=false;
-    string id=to_string(student->id);
-    string fname=student->fname;
-    string lname=student->lname;
-    string section=student->section;
-    string birthday_day=to_string(student->birthdate.tm_mday);
-    string birthday_month=to_string(student->birthdate.tm_mon);
-    string birthday_year=to_string(student->birthdate.tm_year);
+    unsigned short int vector_index=0;
+    string id="id";
+    string fname="fname";
+    string lname="lname";
+    string section="section";
+    vector<string>student_data={id,fname,lname,section};
 
-    vector<string>student_data={id,fname,lname,section,birthday_day,birthday_month,birthday_year};
-
-    while(unsigned short int vector_index=0<student_data.size() or data_find == true){
+    while(vector_index<student_data.size() or data_find == true){
       if(data_type == student_data[vector_index]){
         data_find=true;
       }
+      vector_index++;
     }
-    return data_find;
+    return {data_find,student_data[vector_index]};
 }
 
 void select(string data_type, student_t* student,database_t* data_base){
-  if(data_research_validity(data_type,student)==true){
-    for(unsigned long int i=0;i<data_base->psize){
-      
+  vector<student_t*>sort_student_list;
+  bool is_data_valid=get<0>(data_research(data_type,student));
+  if(is_data_valid==true){
+    for(unsigned long int i=0;i<data_base->psize;i++){
+      if(data_base->data[i])
     }
   }
 }
