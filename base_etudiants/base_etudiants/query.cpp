@@ -19,13 +19,12 @@ void insert(student_t* student, database_t* data_base){
     db_add(data_base,*student); 
     cout<<"student inserted with success"<<endl;
 }
-tuple<bool,string> data_research(string data_type,student_t* student){
+tuple<bool,string>data_analyse(string data_filter,string filter_asked){
   /**
-   * function: check if the data that the user typed is correct and return the data with a string to be used later
-   * 
+   * function:
    */
 
-    bool data_find=false;
+    bool is_data_find=false;
     unsigned short int vector_index=0;
     string id="id";
     string fname="fname";
@@ -34,55 +33,36 @@ tuple<bool,string> data_research(string data_type,student_t* student){
     string birthdate="birthdate";
     vector<string>student_data={id,fname,lname,section,birthdate};//creation of a list to store the data
 
-    while(vector_index<student_data.size() or data_find == true){
-      if(data_type == student_data[vector_index]){
-        data_find=true;
+    while(vector_index<student_data.size() or is_data_find == true){
+      if(data_filter == student_data[vector_index]){
+        is_data_find=true;
       }
       vector_index++;
     }
-    if(data_find == false){
-      return{data_find,""};
+    if(is_data_find ==false){
+      return {is_data_find,""};
     }
-    return {data_find,student_data[vector_index]};
-    //tuple of bool and string in the form of(is the data correct?, data that has been writen)
+    return {is_data_find,student_data[vector_index]};
 }
 
-auto data_type(string data_type,student_t* student){
-  /**
-   * function: return the data type asked of the user. 
-   * We used the library any to store every type that we need in a single map and make the code simpler.
-   */
-  map<string,any>map_data_case={{"id",student->id},
-                                  {"fname",student->fname},
-                                  {"lname",student->lname},
-                                  {"section",student->section},
-                                  {"birthdate",student->birthdate}};
-
-  any data=map_data_case.find(data_type)->second; 
-  return data;
-}
-
-vector<student_t*> select(string data_type, student_t* student,database_t* data_base){
+vector<student_t*> select(string data_type,string filter_asked,student_t* student,database_t* data_base){
   /**
    * function: return a list of student sorted by the filter data_type that the user sent
    */
 
   vector<student_t*>sort_student_list;
   //we get the info of the data_research function
-  bool is_data_valid=get<0>(data_research(data_type,student));
-  string data_write=get<1>(data_research(data_type,student));
-
+  bool is_data_valid=get<0>(data_analyse(data_type,filter_asked));
+  string data_write=get<1>(data_analyse(data_type,filter_asked));
   if(is_data_valid==true){
-    auto data=data_type(data_write,student);
     for(unsigned long int i=0;i<data_base->lsize;i++){
-      if(data_base->data[i].data_write==student.data_write){
+      if(data_base->data[i]->id)
         sort_student_list.push_back(student);
-      }
     }
     return sort_student_list;
   }
   else{
-    throw invalid_argument("The data that you want to select doesn't exist.")
+    throw invalid_argument("The data that you want to select doesn't exist.");
   }
 }
 
