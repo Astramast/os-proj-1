@@ -11,17 +11,9 @@ void student_to_str(char* buffer, student_t* student) {
   /**
    * function: store in the buffer a human readable version of the student information
    * parameter: buffer: variable to store dynamically the content of the student, student: all the informations 
-   *                                                                                           about a student in the data base
-   * 
+   *                                                                                       about a student in the data base
    */
-  unsigned long len=sizeof(student_t)+100;
-  buffer= new char[len];
-  ostringstream out;
-  out<<"Id: "<<student->id<<", First Name: "<<student->fname<<", last Name: "<<student->lname<<", Section: "<<student->section<<", Birthdate: "
-  <<student->birthdate.tm_mday<<"/"<<student->birthdate.tm_mon<<"/"<<student->birthdate.tm_year;
-  string temp=out.str();//temporary value to make the conversion simpler
-  buffer=const_cast<char*>(temp.c_str());
-  //ostringstream is a function to add multiples things to a string in output
+  snprintf(buffer, sizeof(student_t)+100, "Id : %u / Prénom : %s / Nom : %s / Section : %s / Birthdate : '%i-%i-%i'\n", student->id, student->fname, student->lname, student->section, student->birthdate.tm_year+1900, student->birthdate.tm_mon+1, student->birthdate.tm_mday);
   
 }
 
