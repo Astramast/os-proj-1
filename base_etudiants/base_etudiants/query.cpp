@@ -31,7 +31,8 @@ bool data_analyse(string data_filter,string filter_asked){
     string birthdate="birthdate";
     vector<string>student_data={id,fname,lname,section,birthdate};//creation of a list to store the data
 
-    while(is_data_find == false and unsigned short int vector_index=0<student_data.size()){
+	unsigned short int vector_index=0;
+    while(is_data_find == false and vector_index<student_data.size()){
       if(data_filter == student_data[vector_index]){
         is_data_find=true;
       }
