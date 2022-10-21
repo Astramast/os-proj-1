@@ -79,7 +79,7 @@ vector<student_t*> select(string data_type,string filter_asked,student_t* studen
 
       else if(data_type=="birthdate"){
         if(data_base->data[i].birthdate == filter_asked){
-          sort_student_list.push_back(&data_base->[i]);
+          sort_student_list.push_back(&data_base->data[i]);
         }
       }
 
