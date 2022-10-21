@@ -50,8 +50,7 @@ vector<student_t*> select(string data_type,string filter_asked,student_t* studen
 
   vector<student_t*>sort_student_list;
   //we get the info of the data_research function
-  bool is_data_valid=data_analyse(data_type,filter_asked);
-  if(is_data_valid==true){
+  if(data_analyse(data_type, filter_asked)){
     for(unsigned long int i=0;i<data_base->lsize;i++){
       student_t* data_base_student=data_base->data[i];//doit voir si c est student_t ou student_t*
 
