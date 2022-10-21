@@ -55,31 +55,31 @@ vector<student_t*> select(string data_type,string filter_asked,student_t* studen
       
 	  if(data_type=="id"){
         if(data_base->data[i].id == stoul(filter_asked)){//probleme de conversion 
-          sort_student_list.push_back(data_base_student);
+          sort_student_list.push_back(&data_base->data[i]);
         }
       }  
 
       else if(data_type=="fname"){
         if(data_base->data[i].fname == filter_asked){
-          sort_student_list.push_back(data_base_student);
+          sort_student_list.push_back(&data_base->data[i]);
         }
       }
       
       else if(data_type=="lname"){
         if(data_base->data[i].lname == filter_asked){
-          sort_student_list.push_back(data_base_student);
+          sort_student_list.push_back(&data_base->data[i]);
         }
       }
 
       else if(data_type=="section"){
         if(data_base->data[i].section == filter_asked){
-          sort_student_list.push_back(data_base_student);
+          sort_student_list.push_back(&data_base->data[i]);
         }
       }
 
       else if(data_type=="birthdate"){
         if(data_base->data[i].birthdate == filter_asked){
-          sort_student_list.push_back(data_base_student);
+          sort_student_list.push_back(&data_base->[i]);
         }
       }
 
