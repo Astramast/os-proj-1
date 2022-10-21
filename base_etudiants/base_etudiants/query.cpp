@@ -4,7 +4,8 @@
 #include <vector>
 #include <map>
 #include <any>
-
+#include "db.h"
+#include "db.cpp"
 using namespace std;
 
 void insert(student_t* student, database_t* data_base){
