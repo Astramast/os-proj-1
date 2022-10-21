@@ -52,10 +52,9 @@ vector<student_t*> select(string data_type,string filter_asked,student_t* studen
   //we get the info of the data_research function
   if(data_analyse(data_type, filter_asked)){
     for(unsigned long int i=0;i<data_base->lsize;i++){
-      student_t* data_base_student=data_base->data[i];//doit voir si c est student_t ou student_t*
-
-      if(data_type=="id"){
-        if(data_base->data[i].id == filter_asked){//probleme de conversion 
+      
+	  if(data_type=="id"){
+        if(data_base->data[i].id == stoul(filter_asked)){//probleme de conversion 
           sort_student_list.push_back(data_base_student);
         }
       }  
@@ -106,7 +105,7 @@ void delete_function(string data_type,string filter_asked,student_t* student,dat
       student_t* data_base_student=data_base->data[i];//doit voir si c est student_t ou student_t*
 
       if(data_type=="id"){
-        if(data_base->data[i].id == filter_asked){//probleme de conversion 
+        if(data_base->data[i].id == stoul(filter_asked)){//probleme de conversion 
           data_base->data.remove(data_base_student);
         }
       }  
