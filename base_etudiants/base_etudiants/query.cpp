@@ -41,7 +41,7 @@ bool data_analyse(string data_filter,string filter_asked){
     return is_data_find;
 }
 
-vector<student_t*> select(string data_type,string filter_asked,student_t* student,database_t* data_base){
+vector<student_t*> select(string data_type,string filter_asked, database_t* data_base){
   /**
    * function: return a list of student sorted by the filter data_type that the user sent
    * 
