@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <any>
+
 using namespace std;
 
 void insert(student_t* student, database_t* data_base){
@@ -78,8 +79,11 @@ vector<student_t*> select(string data_type,string filter_asked, database_t* data
         }
       }
 
-      else if(data_type=="birthdate"){
-        if(data_base->data[i].birthdate == filter_asked){
+	  else if(data_type=="birthdate"){
+		char* student_bd_temp;
+		tm* student_tm = &data_base->data[i].birthdate;
+		strftime(student_bd_temp, 10, "%d/%m/%Y", student_tm);
+      	if(student_bd_temp == filter_asked){
           sort_student_list.push_back(&data_base->data[i]);
         }
       }
@@ -103,11 +107,9 @@ void delete_function(string data_type,string filter_asked,student_t* student,dat
   bool is_data_valid=data_analyse(data_type,filter_asked);
   if(is_data_valid==true){
     for(unsigned long int i=0;i<data_base->lsize;i++){
-      student_t* data_base_student=data_base->data[i];//doit voir si c est student_t ou student_t*
 
       if(data_type=="id"){
-        if(data_base->data[i].id == stoul(filter_asked)){//probleme de conversion 
-          data_base->data.remove(data_base_student);
+        if(data_base->data[i].id == stoul(filter_asked)){//probleme de conversion
         }
       }  
 
@@ -126,10 +128,10 @@ void delete_function(string data_type,string filter_asked,student_t* student,dat
         }
       }
 
-      else if(data_type=="birthdate"){
+/*      else if(data_type=="birthdate"){
         if(data_base->data[i].birthdate == filter_asked){
         }
-      }
+      }*/
     }
   }
   else{
