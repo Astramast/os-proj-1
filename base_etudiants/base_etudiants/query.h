@@ -2,6 +2,9 @@
 #define _QUERY_H
 
 #include "db.h"
+#include <vector>
+using std::string;
+using std::vector;
 
 typedef enum { QUERY_SUCCESS, QUERY_FAILURE, UNRECOGNISED_FIELD } QUERY_STATUS;
 
@@ -22,34 +25,36 @@ typedef struct {
 void insert(student_t* student, database_t* data_base);
 /**
  * @brief: add a student in the data base if the id doesn't already exist
+ * 
  * @param student: a student
  * @param data_base: the data base
  */
 
-bool data_analyse(string data_filter,string filter_asked);
+bool data_analyse(string data_filter);
 /**
  * @brief: check if the data are correctly written and if the data can be used. 
  * 
  * @param data_filter: the data field(example: fname or id)
- * @param filter_asked: the filter asked by the user (Quentin for a fname for example)
  * @return bool: return if the data is correct or no
  */
 
-vector<student_t*> select(string data_type,string filter_asked, database_t* data_base);
+vector<student_t*> select(string data_filter,string filter_asked, database_t* data_base);
 /**
  * @brief: browse all the students of the data base and add them in a vector if they match with the filter asked.
  * @return: return a vector with all the students sorted by the filter. 
  */
 
-void delete_function(string data_type,string filter_asked,student_t* student,database_t* data_base);
+void delete_function(string data_filter,string filter_asked,database_t* data_base);
 /**
  * @brief: browse all the students of the data base and remove them if they match with the filter asked.
  */
 
-void update(string data_type,string filter_asked,string new_data_type,string new_filter,database_t* data_base);
+void update(string data_filter,string filter_asked,string set_data,string set_new_info,database_t* data_base);
 /**
  * @brief 
  * 
+ * @param
+ * @param
  */
 void query_result_init(query_result_t* result, const char* query);
 /**

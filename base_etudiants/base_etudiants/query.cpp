@@ -2,11 +2,15 @@
 #include <time.h>
 #include <iostream>
 #include <vector>
-#include <map>
-#include <any>
 #include "db.h"
 #include "db.cpp"
-using namespace std;
+using std::stoul;
+using std::string;
+using std::vector;
+using std::cout;
+using std::endl;
+using std::strcpy;
+using std::invalid_argument;
 
 void insert(student_t* student, database_t* data_base){
 
@@ -18,7 +22,7 @@ void insert(student_t* student, database_t* data_base){
   db_add(data_base,*student); 
   cout<<"student inserted with success"<<endl;
 }
-bool data_analyse(string data_filter,string filter_asked){
+bool data_analyse(string data_filter){
 
     bool is_data_find=false;
     string id="id";
@@ -38,46 +42,45 @@ bool data_analyse(string data_filter,string filter_asked){
     return is_data_find;
 }
 
-vector<student_t*> select(string data_type,string filter_asked, database_t* data_base){
+vector<student_t*> select(string data_filter,string filter_asked, database_t* data_base){
 
   vector<student_t*>sort_student_list;
   //we get the info of the data_research function
-  if(data_analyse(data_type, filter_asked)){
+  if(data_analyse(data_filter)){
     for(unsigned long int i=0;i<data_base->lsize;i++){
       
-	  if(data_type=="id"){
+      if(data_filter=="id"){
         if(data_base->data[i].id == stoul(filter_asked)){//probleme de conversion 
           sort_student_list.push_back(&data_base->data[i]);
         }
       }  
 
-      else if(data_type=="fname"){
+      else if(data_filter=="fname"){
         if(data_base->data[i].fname == filter_asked){
           sort_student_list.push_back(&data_base->data[i]);
         }
       }
-      
-      else if(data_type=="lname"){
+        
+      else if(data_filter=="lname"){
         if(data_base->data[i].lname == filter_asked){
           sort_student_list.push_back(&data_base->data[i]);
         }
       }
 
-      else if(data_type=="section"){
+      else if(data_filter=="section"){
         if(data_base->data[i].section == filter_asked){
           sort_student_list.push_back(&data_base->data[i]);
         }
       }
 
-	  else if(data_type=="birthdate"){
-      char* student_bd_temp;
-      tm* student_tm = &data_base->data[i].birthdate;
-      strftime(student_bd_temp, 10, "%d/%m/%Y", student_tm);
-      	if(student_bd_temp == filter_asked){
+      else if(data_filter=="birthdate"){
+        char* student_bd_temp=nullptr;
+        tm* student_tm = &data_base->data[i].birthdate;
+        strftime(student_bd_temp, 10, "%d/%m/%Y", student_tm);
+        if(student_bd_temp == filter_asked){
           sort_student_list.push_back(&data_base->data[i]);
         }
       }
-
     }
   }
   else{
@@ -86,39 +89,38 @@ vector<student_t*> select(string data_type,string filter_asked, database_t* data
   return sort_student_list;
 }
 
-void delete_function(string data_type,string filter_asked,database_t* data_base){
+void delete_function(string data_filter,string filter_asked,database_t* data_base){
 
-  bool is_data_valid=data_analyse(data_type,filter_asked);
-  if(is_data_valid){
+  if(data_analyse(data_filter)){
     for(unsigned long int i=0;i<data_base->lsize;i++){
 		  bool delete_student = false;
-      if(data_type=="id"){
+      if(data_filter=="id"){
         if(data_base->data[i].id == stoul(filter_asked)){
-			delete_student = true;
+			    delete_student = true;
         }
       }  
 
-      else if(data_type=="fname"){
+      else if(data_filter=="fname"){
         if(data_base->data[i].fname == filter_asked){
 			    delete_student = true;
         }
       }
       
-      else if(data_type=="lname"){
+      else if(data_filter=="lname"){
         if(data_base->data[i].lname == filter_asked){
 			    delete_student = true;
         }
       }
 
-      else if(data_type=="section"){
+      else if(data_filter=="section"){
         if(data_base->data[i].section == filter_asked){
 			    delete_student = true;
         }
       }
 
-      else if(data_type=="birthdate"){
+      else if(data_filter=="birthdate"){
 
-        char* student_bd_temp;
+        char* student_bd_temp=nullptr;
         tm* student_tm = &data_base->data[i].birthdate;
         strftime(student_bd_temp, 10, "%d/%m/%Y", student_tm);
 
@@ -138,8 +140,37 @@ void delete_function(string data_type,string filter_asked,database_t* data_base)
   }
 }
 
-void update(string data_type,string filter_asked,string new_data_type,string new_filter,database_t* data_base){
+void update(string data_filter,string filter_asked,string set_data ,char* set_new_info,database_t* data_base){
 
+  vector<student_t*> temporary_student_list=select(data_filter,filter_asked,data_base);
+  if(data_analyse(set_data)){
+    for(unsigned long int i=0;i<temporary_student_list.size();i++){
+      
+      if(set_data=="id"){
+        temporary_student_list[i]->id= stoul(set_new_info);
+      }  
+
+      else if(set_data=="fname"){
+        strcpy(temporary_student_list[i]->fname,set_new_info);
+      }
+        
+      else if(set_data=="lname"){
+        strcpy(temporary_student_list[i]->lname,set_new_info);
+      }
+
+      else if(set_data=="section"){
+        strcpy(temporary_student_list[i]->section,set_new_info);
+      }
+
+      else if(set_data=="birthdate"){
+        //convert a Date string into the struct tm
+        strptime(set_new_info,"%d/%m/%Y",&temporary_student_list[i]->birthdate);     
+      }
+    }
+  }
+  else{
+    throw invalid_argument("The data that you want to change doesn't exist.");
+  }
 
 }
 void query_result_init(query_result_t* result, const char* query) {
