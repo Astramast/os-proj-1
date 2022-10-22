@@ -2,10 +2,8 @@
 #include <iostream>
 #include <ctype.h>
 #include <stdio.h>
-#include <string.h>
 #include <time.h>
-#include <sstream>
-using namespace std;
+using std::strcmp;
 
 void student_to_str(char* buffer, student_t* student) {
   /**
