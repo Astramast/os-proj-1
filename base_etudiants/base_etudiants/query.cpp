@@ -106,33 +106,45 @@ void delete_function(string data_type,string filter_asked,student_t* student,dat
  * probleme: je sais pas cmt remove ds la data base sinon c les memes probs que select 
  */
   bool is_data_valid=data_analyse(data_type,filter_asked);
-  if(is_data_valid==true){
+  if(is_data_valid){
     for(unsigned long int i=0;i<data_base->lsize;i++){
-
+		bool delete_student = false;
       if(data_type=="id"){
-        if(data_base->data[i].id == stoul(filter_asked)){//probleme de conversion
+        if(data_base->data[i].id == stoul(filter_asked)){
+			delete_student = true;
         }
       }  
 
       else if(data_type=="fname"){
         if(data_base->data[i].fname == filter_asked){
+			delete_student = true;
         }
       }
       
       else if(data_type=="lname"){
         if(data_base->data[i].lname == filter_asked){
+			delete_student = true;
         }
       }
 
       else if(data_type=="section"){
         if(data_base->data[i].section == filter_asked){
+			delete_student = true;
         }
       }
 
-/*      else if(data_type=="birthdate"){
-        if(data_base->data[i].birthdate == filter_asked){
+      else if(data_type=="birthdate"){
+	  	char* student_bd_temp;
+		tm* student_tm = &data_base->data[i].birthdate;
+		strftime(student_bd_temp, 10, "%d/%m/%Y", student_tm);
+        if(student_bd_temp == filter_asked){
+			delete_student = true;
         }
-      }*/
+      }
+	  if (delete_student){
+		db_remove(data_base, i); //ici lsize-- est execute
+		i--; //!!! On fait ça car le student indice i va etre remplace par le suivant et on doit aussi le controler!!!
+	  }
     }
   }
   else{
