@@ -9,22 +9,17 @@
 using namespace std;
 
 void insert(student_t* student, database_t* data_base){
-  /**
-   * function: add a student in the data base if the id doesn't already exist
-   */
-   
-    for(unsigned long int i=0;i<data_base->lsize;i++ ){
-      if(data_base->data[i].id==student->id){
-          throw invalid_argument("The id where you want to set a new student already exist.");
-      }
+
+  for(unsigned long int i=0;i<data_base->lsize;i++ ){
+    if(data_base->data[i].id==student->id){
+        throw invalid_argument("The id where you want to set a new student already exist.");
     }
-    db_add(data_base,*student); 
-    cout<<"student inserted with success"<<endl;
+  }
+  db_add(data_base,*student); 
+  cout<<"student inserted with success"<<endl;
 }
 bool data_analyse(string data_filter,string filter_asked){
-  /**
-   * function:
-   */
+
     bool is_data_find=false;
     string id="id";
     string fname="fname";
@@ -44,12 +39,6 @@ bool data_analyse(string data_filter,string filter_asked){
 }
 
 vector<student_t*> select(string data_type,string filter_asked, database_t* data_base){
-  /**
-   * function: return a list of student sorted by the filter data_type that the user sent
-   * 
-   * il faut trouver cmt modifier les types et cmt filtrer la date de naissance et c bon(c est tres moche mais ca devrait marcher
-   * on modifiera apres)
-   */
 
   vector<student_t*>sort_student_list;
   //we get the info of the data_research function
@@ -81,9 +70,9 @@ vector<student_t*> select(string data_type,string filter_asked, database_t* data
       }
 
 	  else if(data_type=="birthdate"){
-		char* student_bd_temp;
-		tm* student_tm = &data_base->data[i].birthdate;
-		strftime(student_bd_temp, 10, "%d/%m/%Y", student_tm);
+      char* student_bd_temp;
+      tm* student_tm = &data_base->data[i].birthdate;
+      strftime(student_bd_temp, 10, "%d/%m/%Y", student_tm);
       	if(student_bd_temp == filter_asked){
           sort_student_list.push_back(&data_base->data[i]);
         }
@@ -97,18 +86,12 @@ vector<student_t*> select(string data_type,string filter_asked, database_t* data
   return sort_student_list;
 }
 
-void delete_function(string data_type,string filter_asked,student_t* student,database_t* data_base){
-/**
- * @brief Remove all the students in the data base that match the filter data_type =filter asked
- * 
- * @param
- * 
- * probleme: je sais pas cmt remove ds la data base sinon c les memes probs que select 
- */
+void delete_function(string data_type,string filter_asked,database_t* data_base){
+
   bool is_data_valid=data_analyse(data_type,filter_asked);
   if(is_data_valid){
     for(unsigned long int i=0;i<data_base->lsize;i++){
-		bool delete_student = false;
+		  bool delete_student = false;
       if(data_type=="id"){
         if(data_base->data[i].id == stoul(filter_asked)){
 			delete_student = true;
@@ -117,33 +100,36 @@ void delete_function(string data_type,string filter_asked,student_t* student,dat
 
       else if(data_type=="fname"){
         if(data_base->data[i].fname == filter_asked){
-			delete_student = true;
+			    delete_student = true;
         }
       }
       
       else if(data_type=="lname"){
         if(data_base->data[i].lname == filter_asked){
-			delete_student = true;
+			    delete_student = true;
         }
       }
 
       else if(data_type=="section"){
         if(data_base->data[i].section == filter_asked){
-			delete_student = true;
+			    delete_student = true;
         }
       }
 
       else if(data_type=="birthdate"){
-	  	char* student_bd_temp;
-		tm* student_tm = &data_base->data[i].birthdate;
-		strftime(student_bd_temp, 10, "%d/%m/%Y", student_tm);
+
+        char* student_bd_temp;
+        tm* student_tm = &data_base->data[i].birthdate;
+        strftime(student_bd_temp, 10, "%d/%m/%Y", student_tm);
+
         if(student_bd_temp == filter_asked){
-			delete_student = true;
+			    delete_student = true;
         }
       }
+
 	  if (delete_student){
-		db_remove(data_base, i); //ici lsize-- est execute
-		i--; //!!! On fait ça car le student indice i va etre remplace par le suivant et on doit aussi le controler!!!
+      db_remove(data_base, i); //ici lsize-- est execute
+      i--; //!!! On fait ça car le student indice i va etre remplace par le suivant et on doit aussi le controler!!!
 	  }
     }
   }
@@ -152,8 +138,7 @@ void delete_function(string data_type,string filter_asked,student_t* student,dat
   }
 }
 
-void update(string data_type,string filter_asked,string new_data_type,string new_filter,
-            student_t* student,database_t* data_base){
+void update(string data_type,string filter_asked,string new_data_type,string new_filter,database_t* data_base){
 
 
 }

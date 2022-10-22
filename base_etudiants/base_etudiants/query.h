@@ -25,6 +25,7 @@ void insert(student_t* student, database_t* data_base);
  * @param student: a student
  * @param data_base: the data base
  */
+
 bool data_analyse(string data_filter,string filter_asked);
 /**
  * @brief: check if the data are correctly written and if the data can be used. 
@@ -45,6 +46,11 @@ void delete_function(string data_type,string filter_asked,student_t* student,dat
  * @brief: browse all the students of the data base and remove them if they match with the filter asked.
  */
 
+void update(string data_type,string filter_asked,string new_data_type,string new_filter,database_t* data_base);
+/**
+ * @brief 
+ * 
+ */
 void query_result_init(query_result_t* result, const char* query);
 /**
  * @brief: Initialise a query_result_t structure. 
@@ -53,9 +59,6 @@ void query_result_init(query_result_t* result, const char* query);
  * 
  */
 
-/**
- * Add a student to a query result.
- **/
 void query_result_add(query_result_t* result, student_t s);
 /**
  * @brief: Add a student to a query result.
