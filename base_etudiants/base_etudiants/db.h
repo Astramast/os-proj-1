@@ -42,4 +42,9 @@ void db_init(database_t *db);
  **/
 void db_extend_memory(database_t *db);
 
+/**
+ * Remove student at index "indice".
+**/
+void db_remove(database_t* db, int indice);
+
 #endif
