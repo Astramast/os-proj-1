@@ -20,6 +20,7 @@ void db_save(database_t *db, const char *path) {
 }
 
 void db_load(database_t *db, const char *path) {
+	printf("db_load entered");
     FILE *file = fopen(path, "rb");
     if (!file) {
         perror("Could not open the DB file");
@@ -33,6 +34,7 @@ void db_load(database_t *db, const char *path) {
 }
 
 void db_init(database_t *db) {
+	printf("entered db init");
 	db->data = (student_t*) malloc(sizeof(student_t)*10000);
 	if (db->data == NULL){
 		printf("DB's size too large TwT'");

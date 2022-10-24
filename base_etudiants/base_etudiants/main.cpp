@@ -3,6 +3,7 @@
 #include "db.h"
 
 int main(int argc, char const *argv[]) {
+	printf("STARTING");
     const char *db_path = argv[1];
 	printf("Entered path : %s", db_path);
 	database_t db;
