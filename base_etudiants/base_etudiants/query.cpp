@@ -2,6 +2,7 @@
 #include <time.h>
 #include <iostream>
 #include <vector>
+#include <cstring>
 #include "db.h"
 #include "db.cpp"
 using std::stoul;
@@ -12,7 +13,7 @@ using std::endl;
 using std::strcpy;
 using std::invalid_argument;
 
-void insert(student_t* student, database_t* data_base){
+void insert(student_t* student, database_t *data_base){
 
   for(unsigned long int i=0;i<data_base->lsize;i++ ){
     if(data_base->data[i].id==student->id){
@@ -144,29 +145,31 @@ void update(string data_filter,string filter_asked,string set_data ,char* set_ne
 
   vector<student_t*> temporary_student_list=select(data_filter,filter_asked,data_base);
   if(data_analyse(set_data)){
-    for(unsigned long int i=0;i<temporary_student_list.size();i++){
-      
       if(set_data=="id"){
-        temporary_student_list[i]->id= stoul(set_new_info);
-      }  
+		for (int i=0; i<temporary_student_list.size(); i++){
+        	temporary_student_list[i]->id= stoul(set_new_info);
+      }}
 
       else if(set_data=="fname"){
-        strcpy(temporary_student_list[i]->fname,set_new_info);
-      }
-        
+		for(int i=0;i<temporary_student_list.size();i++){
+        	strcpy(temporary_student_list[i]->fname,set_new_info);
+      }}
+
       else if(set_data=="lname"){
-        strcpy(temporary_student_list[i]->lname,set_new_info);
-      }
+        for(int i=0;i<temporary_student_list.size();i++){
+			strcpy(temporary_student_list[i]->lname,set_new_info);
+      }}
 
       else if(set_data=="section"){
-        strcpy(temporary_student_list[i]->section,set_new_info);
-      }
+        for(int i=0;i<temporary_student_list.size();i++){
+			strcpy(temporary_student_list[i]->section,set_new_info);
+      }}
 
       else if(set_data=="birthdate"){
-        //convert a Date string into the struct tm
-        strptime(set_new_info,"%d/%m/%Y",&temporary_student_list[i]->birthdate);     
-      }
-    }
+		for(int i=0;i<temporary_student_list.size();i++){
+		//convert a Date string into the struct tm
+        strptime(set_new_info,"%d/%m/%Y",&temporary_student_list[i]->birthdate);
+      }}
   }
   else{
     throw invalid_argument("The data that you want to change doesn't exist.");
