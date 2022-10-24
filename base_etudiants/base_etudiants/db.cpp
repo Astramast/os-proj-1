@@ -57,7 +57,7 @@ void db_extend_memory(database_t *db){
 }
 
 void db_remove(database_t* db, int indice){
-	for (int i = indice+1; i<=db->lsize; i++){
+	for (size_t i = indice+1; i<=db->lsize; i++){
 		db->data[i-1] = db->data[i];
 	}
 	db->lsize--;

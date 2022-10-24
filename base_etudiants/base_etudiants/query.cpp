@@ -4,7 +4,6 @@
 #include <vector>
 #include <cstring>
 #include "db.h"
-#include "db.cpp"
 using std::stoul;
 using std::string;
 using std::vector;
@@ -146,27 +145,27 @@ void update(string data_filter,string filter_asked,string set_data ,char* set_ne
   vector<student_t*> temporary_student_list=select(data_filter,filter_asked,data_base);
   if(data_analyse(set_data)){
       if(set_data=="id"){
-		for (int i=0; i<temporary_student_list.size(); i++){
+		for (size_t i=0; i<temporary_student_list.size(); i++){
         	temporary_student_list[i]->id= stoul(set_new_info);
       }}
 
       else if(set_data=="fname"){
-		for(int i=0;i<temporary_student_list.size();i++){
+		for(size_t i=0;i<temporary_student_list.size();i++){
         	strcpy(temporary_student_list[i]->fname,set_new_info);
       }}
 
       else if(set_data=="lname"){
-        for(int i=0;i<temporary_student_list.size();i++){
+        for(size_t i=0;i<temporary_student_list.size();i++){
 			strcpy(temporary_student_list[i]->lname,set_new_info);
       }}
 
       else if(set_data=="section"){
-        for(int i=0;i<temporary_student_list.size();i++){
+        for(size_t i=0;i<temporary_student_list.size();i++){
 			strcpy(temporary_student_list[i]->section,set_new_info);
       }}
 
       else if(set_data=="birthdate"){
-		for(int i=0;i<temporary_student_list.size();i++){
+		for(size_t i=0;i<temporary_student_list.size();i++){
 		//convert a Date string into the struct tm
         strptime(set_new_info,"%d/%m/%Y",&temporary_student_list[i]->birthdate);
       }}
