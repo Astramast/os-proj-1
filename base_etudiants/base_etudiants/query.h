@@ -73,4 +73,7 @@ void query_result_add(query_result_t* result, student_t s);
  * @brief: Add a student to a query result.
  * 
  */
+
+void query_result_extend_memory(query_result_t *res);
+
 #endif

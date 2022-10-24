@@ -176,14 +176,27 @@ void update(string data_filter,string filter_asked,string set_data ,char* set_ne
 
 }
 void query_result_init(query_result_t* result, const char* query) {
-  struct timespec now;
-  clock_gettime(CLOCK_REALTIME, &now);
-  result->start_ns = now.tv_nsec + 1e9 * now.tv_sec;
-  result->status = QUERY_SUCCESS;
-  // Votre code ici
-  //constructeur(initialise les valeurs)
+	struct timespec now;
+	clock_gettime(CLOCK_REALTIME, &now);
+	result->start_ns = now.tv_nsec + 1e9 * now.tv_sec;
+	result->status = QUERY_SUCCESS;
+	snprintf(result->query, sizeof(query), "%s", query);
+	result->lsize = 0;
+	result->psize = sizeof(student_t)*100;
+	result->students = (student_t*) malloc(sizeof(student_t)*100);
 }
 
 void query_result_add(query_result_t* result, student_t s){
+	if (result->lsize*sizeof(student_t) == result->psize){query_result_extend_memory(result);}
+	result->students[result->lsize] = s;
+	result->lsize++;
+}
 
+void query_result_extend_memory(query_result_t *res){
+	student_t* temp = NULL;
+	temp = new student_t[10*(res->psize)];
+	memcpy(temp, res->students, sizeof(student_t)*res->lsize);
+	free(res->students);
+	res->students = temp;
+	res->psize = 10*res->psize;
 }

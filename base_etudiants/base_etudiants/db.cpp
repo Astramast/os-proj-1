@@ -20,7 +20,7 @@ void db_save(database_t *db, const char *path) {
 }
 
 void db_load(database_t *db, const char *path) {
-	printf("db_load entered");
+	printf("Entered db_load\n");
     FILE *file = fopen(path, "rb");
     if (!file) {
         perror("Could not open the DB file");
@@ -34,7 +34,7 @@ void db_load(database_t *db, const char *path) {
 }
 
 void db_init(database_t *db) {
-	printf("entered db init");
+	printf("Entered db_init\n");
 	db->data = (student_t*) malloc(sizeof(student_t)*10000);
 	if (db->data == NULL){
 		printf("DB's size too large TwT'");
@@ -51,11 +51,11 @@ void db_add(database_t *db, student_t student) {
 
 void db_extend_memory(database_t *db){
 	student_t* temp = NULL;
-	temp = new student_t[2*(db->psize)];
+	temp = new student_t[10*(db->psize)];
 	memcpy(temp, db->data, sizeof(student_t)*db->lsize);
 	free(db->data);
 	db->data = temp;
-	db->psize = 2*db->psize;
+	db->psize = 10*db->psize;
 }
 
 void db_remove(database_t* db, int indice){
