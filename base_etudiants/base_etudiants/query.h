@@ -51,10 +51,13 @@ void delete_function(string data_filter,string filter_asked,database_t* data_bas
 
 void update(string data_filter,string filter_asked,string set_data,string set_new_info,database_t* data_base);
 /**
- * @brief 
+ * @brief Update the data of all the students matching the filter, data_filter=filter_asked and replace the data of set_data by the new data
  * 
- * @param
- * @param
+ * @param data_filter: the filter in terms of the data type(example: fname)
+ * @param filter_asked: the filter in terms of the student information to process(example: Quentin)
+ * @param set_data: the type of data that the user want to update(example: id).
+ * @param set_new_info: The new information of the student for the set_data(example: 83)
+ * 
  */
 void query_result_init(query_result_t* result, const char* query);
 /**
