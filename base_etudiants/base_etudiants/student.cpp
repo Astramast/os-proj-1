@@ -5,7 +5,7 @@
 #include <time.h>
 #include <cstring>
 using std::strcmp;
-oups
+
 void student_to_str(char* buffer, student_t* student) {
   /**
    * function: store in the buffer a human readable version of the student information
