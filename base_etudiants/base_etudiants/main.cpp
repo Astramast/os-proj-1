@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "db.h"
-
+#
 int main(int argc, char const *argv[]) {
 	printf("STARTING\n");
     const char *db_path = argv[1];
