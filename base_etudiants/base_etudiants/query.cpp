@@ -148,35 +148,35 @@ void delete_function(string data_filter,string filter_asked,database_t* data_bas
 	}
 }
 
-void update(string data_filter,string filter_asked,string set_data ,char* set_new_info,database_t* data_base){
+void update(string data_filter,string filter_asked,string set_data ,char* set_new_info,database_t* data_base, query_result_t *query){
 
-	vector<student_t*> temporary_student_list=select(data_filter,filter_asked,data_base);
+	vector<student_t*> temporary_student_list=select(data_filter,filter_asked,data_base, query);
 	if(data_analyse(set_data)){
 		if(set_data=="id"){
 			for (size_t i=0; i<temporary_student_list.size(); i++){
 				temporary_student_list[i]->id= stoul(set_new_info);
-				query_result_add(query, temporary_student_list[i]);
+				query_result_add(query, *temporary_student_list[i]);
 			}
 		}
 
 		else if(set_data=="fname"){
 			for(size_t i=0;i<temporary_student_list.size();i++){
 				strcpy(temporary_student_list[i]->fname,set_new_info);
-				query_result_add(query, temporary_student_list[i]);
+				query_result_add(query, *temporary_student_list[i]);
 			}
 		}
 
 		else if(set_data=="lname"){
 			for(size_t i=0;i<temporary_student_list.size();i++){
 				strcpy(temporary_student_list[i]->lname,set_new_info);
-				query_result_add(query, temporary_student_list[i]);
+				query_result_add(query, *temporary_student_list[i]);
 			}
 		}
 
 		else if(set_data=="section"){
 			for(size_t i=0;i<temporary_student_list.size();i++){
 				strcpy(temporary_student_list[i]->section,set_new_info);
-				query_result_add(query, temporary_student_list[i]);
+				query_result_add(query, *temporary_student_list[i]);
 			}
 		}
 
@@ -184,7 +184,7 @@ void update(string data_filter,string filter_asked,string set_data ,char* set_ne
 			for(size_t i=0;i<temporary_student_list.size();i++){
 			//convert a Date string into the struct tm
 				strptime(set_new_info,"%d/%m/%Y",&temporary_student_list[i]->birthdate);
-				query_result_add(query, temporary_student_list[i]);
+				query_result_add(query, *temporary_student_list[i]);
 			}
 		}
 	}
