@@ -22,9 +22,9 @@ void insert(student_t* student, database_t *data_base){
 	cout<<"student inserted with success"<<endl;
 }
 
-bool data_analyse(string data_filter){
+bool data_analyse(string field){
 
-	bool is_data_find=false;
+	bool is_field_found=false;
 	string id="id";
 	string fname="fname";
 	string lname="lname";
@@ -33,54 +33,54 @@ bool data_analyse(string data_filter){
 	vector<string>student_data={id,fname,lname,section,birthdate};//creation of a list to store the data
 
 	unsigned short int vector_index=0;
-	while(is_data_find == false and vector_index<student_data.size()){
-		if(data_filter == student_data[vector_index]){
-			is_data_find=true;
+	while(is_field_found == false and vector_index<student_data.size()){
+		if(field == student_data[vector_index]){
+			is_field_found=true;
 		}
 		vector_index++;
 	}
-	return is_data_find;
+	return is_field_found;
 }
 
-vector<student_t*> select(string data_filter,string filter_asked, database_t* data_base, query_result_t *query){
+vector<student_t*> select(string field , string value, database_t* data_base, query_result_t *query){
 
 	vector<student_t*>sort_student_list;
-	if(data_analyse(data_filter)){
+	if(data_analyse(field)){
 		for(unsigned long int i=0;i<data_base->lsize;i++){
 
-			if(data_filter=="id"){
-				if(data_base->data[i].id == stoul(filter_asked)){
+			if(field =="id"){
+				if(data_base->data[i].id == stoul(value)){
 					sort_student_list.push_back(&data_base->data[i]);
 					query_result_add(query, data_base->data[i]);
 				}
 			}
 
-			else if(data_filter=="fname"){
-				if(data_base->data[i].fname == filter_asked){
+			else if(field =="fname"){
+				if(data_base->data[i].fname == value){
 					sort_student_list.push_back(&data_base->data[i]);
 					query_result_add(query, data_base->data[i]);       
 				}
 			}
 
-			else if(data_filter=="lname"){
-				if(data_base->data[i].lname == filter_asked){
+			else if(field =="lname"){
+				if(data_base->data[i].lname == value){
 					sort_student_list.push_back(&data_base->data[i]);
 					query_result_add(query, data_base->data[i]);       
 				}
 			}
 
-			else if(data_filter=="section"){
-				if(data_base->data[i].section == filter_asked){
+			else if(field =="section"){
+				if(data_base->data[i].section == value){
 					sort_student_list.push_back(&data_base->data[i]);
 					query_result_add(query, data_base->data[i]);       
 				}
 			}
 
-			else if(data_filter=="birthdate"){
+			else if(field =="birthdate"){
 				char* student_bd_temp=nullptr;
 				tm* student_tm = &data_base->data[i].birthdate;
 				strftime(student_bd_temp, 10, "%d/%m/%Y", student_tm);
-				if(student_bd_temp == filter_asked){
+				if(student_bd_temp == value){
 					sort_student_list.push_back(&data_base->data[i]);
 					query_result_add(query, data_base->data[i]);       
 				}
@@ -93,45 +93,45 @@ vector<student_t*> select(string data_filter,string filter_asked, database_t* da
 	return sort_student_list;
 }
 
-void delete_function(string data_filter,string filter_asked,database_t* data_base, query_result_t *query){
+void delete_function(string field,string value , database_t* data_base, query_result_t *query){
 
-	if(data_analyse(data_filter)){
+	if(data_analyse(field)){
 		for(unsigned long int i=0;i<data_base->lsize;i++){
 			bool delete_student = false;
 
-			if(data_filter=="id"){
-				if(data_base->data[i].id == stoul(filter_asked)){
+			if(field =="id"){
+				if(data_base->data[i].id == stoul(value)){
 					delete_student = true;
 					query_result_add(query, data_base->data[i]);
 				}
 			}
 
-			else if(data_filter=="fname"){
-				if(data_base->data[i].fname == filter_asked){
+			else if(field =="fname"){
+				if(data_base->data[i].fname == value){
 					delete_student = true;
 					query_result_add(query, data_base->data[i]);
 				}
 			}
 
-			else if(data_filter=="lname"){
-				if(data_base->data[i].lname == filter_asked){
+			else if(field =="lname"){
+				if(data_base->data[i].lname == value){
 					delete_student = true;
 					query_result_add(query, data_base->data[i]);
 				}
 			}
 
-			else if(data_filter=="section"){
-				if(data_base->data[i].section == filter_asked){
+			else if(field =="section"){
+				if(data_base->data[i].section == value){
 					delete_student = true;
 					query_result_add(query, data_base->data[i]);
 				}
 			}
 
-			else if(data_filter=="birthdate"){
+			else if(field =="birthdate"){
 				char* student_bd_temp=nullptr;
 				tm* student_tm = &data_base->data[i].birthdate;
 				strftime(student_bd_temp, 10, "%d/%m/%Y", student_tm);
-				if(student_bd_temp == filter_asked){
+				if(student_bd_temp == value){
 					delete_student = true;
 					query_result_add(query, data_base->data[i]);
 				}
@@ -148,42 +148,42 @@ void delete_function(string data_filter,string filter_asked,database_t* data_bas
 	}
 }
 
-void update(string data_filter,string filter_asked,string set_data ,char* set_new_info,database_t* data_base, query_result_t *query){
+void update(string filter_field ,string value ,string modified_field ,char* new_value,database_t* data_base, query_result_t *query){
 
-	vector<student_t*> temporary_student_list=select(data_filter,filter_asked,data_base, query);
-	if(data_analyse(set_data)){
-		if(set_data=="id"){
+	vector<student_t*> temporary_student_list=select(filter_field,value,data_base, query);
+	if(data_analyse(modified_field)){
+		if(modified_field =="id"){
 			for (size_t i=0; i<temporary_student_list.size(); i++){
-				temporary_student_list[i]->id= stoul(set_new_info);
+				temporary_student_list[i]->id= stoul(new_value);
 				query_result_add(query, *temporary_student_list[i]);
 			}
 		}
 
-		else if(set_data=="fname"){
+		else if(modified_field =="fname"){
 			for(size_t i=0;i<temporary_student_list.size();i++){
-				strcpy(temporary_student_list[i]->fname,set_new_info);
+				strcpy(temporary_student_list[i]->fname,new_value);
 				query_result_add(query, *temporary_student_list[i]);
 			}
 		}
 
-		else if(set_data=="lname"){
+		else if(modified_field =="lname"){
 			for(size_t i=0;i<temporary_student_list.size();i++){
-				strcpy(temporary_student_list[i]->lname,set_new_info);
+				strcpy(temporary_student_list[i]->lname,new_value);
 				query_result_add(query, *temporary_student_list[i]);
 			}
 		}
 
-		else if(set_data=="section"){
+		else if(modified_field =="section"){
 			for(size_t i=0;i<temporary_student_list.size();i++){
-				strcpy(temporary_student_list[i]->section,set_new_info);
+				strcpy(temporary_student_list[i]->section,new_value);
 				query_result_add(query, *temporary_student_list[i]);
 			}
 		}
 
-		else if(set_data=="birthdate"){
+		else if(modified_field =="birthdate"){
 			for(size_t i=0;i<temporary_student_list.size();i++){
 			//convert a Date string into the struct tm
-				strptime(set_new_info,"%d/%m/%Y",&temporary_student_list[i]->birthdate);
+				strptime(new_value,"%d/%m/%Y",&temporary_student_list[i]->birthdate);
 				query_result_add(query, *temporary_student_list[i]);
 			}
 		}
