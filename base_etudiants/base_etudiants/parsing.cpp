@@ -54,7 +54,7 @@ bool parse_insert(char* query, char* fname, char* lname, unsigned* id, char* sec
     if (token == NULL) {
         return false;
     }
-    if (strptime(token, "%d/%m/%Y", birthdate) == NULL) {
+    if (strptime(token, "%d/%m/%Y", birthdate) == NULL) {//transforme un string en date
         return false;
     }
     return true;

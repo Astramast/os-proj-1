@@ -13,7 +13,7 @@ void student_to_str(char* buffer, student_t* student) {
    *                                                                                           about a student in the data base
    * 
    */
-	snprintf(buffer, sizeof(student_t)+100, "Id : %u / Prénom : %s / Nom : %s / Section : %s / Birthdate : %i/%i/%i\n", student->id, student->fname, student->lname, student->section, student->birthdate.tm_year, student->birthdate.tm_mon, student->birthdate.tm_mday);
+	snprintf(buffer, sizeof(student_t)+100, "Id : %u / Prénom : %s / Nom : %s / Section : %s / Birthdate : %i/%i/%i\n", student->id, student->fname, student->lname, student->section, student->birthdate.tm_year+1900, student->birthdate.tm_mon+1, student->birthdate.tm_mday);
 }
 
 int student_equals(student_t* student_1, student_t* student_2) {
