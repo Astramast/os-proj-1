@@ -23,14 +23,20 @@ void db_load(database_t *db, const char *path) {
 	printf("Entered db_load\n");
     FILE *file = fopen(path, "rb");
     if (!file) {
+		printf("on entre dans l'erreur !!!\n");
         perror("Could not open the DB file");
         exit(1);
     }
     student_t student;
+	int i=0;
     while (fread(&student, sizeof(student_t), 1, file)) {
+		printf("%i\n", i);
+		i++;
         db_add(db, student);
     }
+	printf("tout va bien ligne 34\n");
     fclose(file);
+	printf("bon ou est l'erreur \n");
 }
 
 void db_init(database_t *db) {
