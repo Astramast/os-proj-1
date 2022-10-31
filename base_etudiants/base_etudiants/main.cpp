@@ -10,7 +10,11 @@ int main(int argc, char const *argv[]) {
 	database_t db;
     db_init(&db);
     db_load(&db, db_path);
-    // Il y a sans doute des choses à faire ici...
+    for (size_t i=0; i<db.lsize; i++){
+		char b[1000];
+		student_to_str(b, &db.data[i]);
+		printf("%s\n", b);
+	}
     db_save(&db, db_path);
     printf("Bye bye!\n");
     return 0;
