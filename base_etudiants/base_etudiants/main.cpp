@@ -10,10 +10,10 @@ int main(int argc, char const *argv[]) {
 	database_t db;
     db_init(&db);
     db_load(&db, db_path);
-    for (size_t i=0; i<db.lsize; i++){
+    for (size_t i=0; i<10; i++){
 		char b[1000];
 		student_to_str(b, &db.data[i]);
-		printf("%s\n", b);
+		printf("%s", b);
 	}
     db_save(&db, db_path);
     printf("Bye bye!\n");
