@@ -37,7 +37,7 @@ void db_init(database_t *db) {
 	printf("Entered db_init\n");
 	db->data = (student_t*) malloc(sizeof(student_t)*10000);
 	if (db->data == NULL){
-		printf("DB's size too large TwT'");
+		perror("DB's size too large for memory-chan TwT'");
 	}
 	db->psize = 10000*sizeof(student_t);
 	db->lsize = 0;
