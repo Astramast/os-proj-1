@@ -76,4 +76,6 @@ void query_result_add(query_result_t* result, student_t s);
 
 void query_result_extend_memory(query_result_t *res);
 
+void query_result_log(query_result_t *query, string file_path);
+
 #endif

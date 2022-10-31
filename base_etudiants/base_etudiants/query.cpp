@@ -1,6 +1,7 @@
 #include "query.h"
 #include <time.h>
 #include <iostream>
+#include <stdio.h>
 #include <vector>
 #include <cstring>
 #include "db.h"
@@ -217,4 +218,27 @@ void query_result_extend_memory(query_result_t *res){
 	free(res->students);
 	res->students = temp;
 	res->psize = 10*res->psize;
+}
+
+void query_result_log(query_result_t *query, const char* file_path){
+	FILE *file = fopen(file_path, "w");
+	if (file != NULL){
+		fputs("Etudiants concernés", file);
+		for (size_t i=0; i<query->lsize; i++){
+			char temp[1000];
+			student_to_str(temp, &query->students[i]);
+			fputs(temp, file);
+		}
+		char temp[356];
+		snprintf(temp, 356, "Query status : %i\n", query->status);
+		fputs(temp, file);
+		snprintf(temp, 356, "Query request : %s\n", query->query);
+		fputs(temp, file);
+		snprintf(temp, 356, "Query start time : %li\n", query->start_ns);
+		fputs(temp, file);
+		snprintf(temp, 356, "Query end time : %li\n", query->end_ns);
+		fputs(temp, file);
+		fclose(file);
+	}
+	else{perror(file_path);}
 }
