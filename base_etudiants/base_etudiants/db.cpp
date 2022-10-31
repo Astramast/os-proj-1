@@ -23,29 +23,23 @@ void db_load(database_t *db, const char *path) {
 	printf("Entered db_load\n");
     FILE *file = fopen(path, "rb");
     if (!file) {
-		printf("on entre dans l'erreur !!!\n");
         perror("Could not open the DB file");
         exit(1);
     }
     student_t student;
-	int i=0;
     while (fread(&student, sizeof(student_t), 1, file)) {
-		printf("%i\n", i);
-		i++;
         db_add(db, student);
     }
-	printf("tout va bien ligne 34\n");
     fclose(file);
-	printf("bon ou est l'erreur \n");
 }
 
 void db_init(database_t *db) {
 	printf("Entered db_init\n");
-	db->data = (student_t*) malloc(sizeof(student_t)*10000);
+	db->data = (student_t*) malloc(sizeof(student_t)*1000000);
 	if (db->data == NULL){
 		perror("DB's size too large for memory-chan TwT'");
 	}
-	db->psize = 10000*sizeof(student_t);
+	db->psize = 1000000*sizeof(student_t);
 	db->lsize = 0;
 }
 
@@ -56,7 +50,7 @@ void db_add(database_t *db, student_t student) {
 }
 
 void db_extend_memory(database_t *db){
-	student_t* temp = NULL;
+	student_t* temp;
 	temp = new student_t[10*(db->psize)];
 	memcpy(temp, db->data, sizeof(student_t)*db->lsize);
 	free(db->data);

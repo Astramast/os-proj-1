@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include <unistd.h>
 #include "db.h"
 #include "utils.h"
 
@@ -10,12 +10,31 @@ int main(int argc, char const *argv[]) {
 	database_t db;
     db_init(&db);
     db_load(&db, db_path);
-    for (size_t i=9; i<10; i++){
-		char b[1000];
-		student_to_str(b, &db.data[i]);
-		printf("%s", b);
+	int sons[4];
+	//int pipes[8];
+	int pid = 1;
+	for (int i=0; i<4; i++){
+		pid = fork();
+		if (pid !=0){
+			sons[i]=pid;
+		}
+		else{
+			i=4;
+		}
 	}
-    db_save(&db, db_path);
-    printf("Bye bye!\n");
+	//TODO
+	if (pid!=0){
+    	db_save(&db, db_path);
+    	printf("Bye bye!\n");
+		printf("Sons : ");
+		for (int i=0; i<4; i++){
+			printf("%i, ", sons[i]);
+		}
+		printf("\n");
+	}
+	else{
+		printf("Im son ");
+	}
+	printf("%i\n", pid);
     return 0;
 }
