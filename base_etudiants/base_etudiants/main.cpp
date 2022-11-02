@@ -3,6 +3,16 @@
 #include "db.h"
 #include "utils.h"
 
+bool FLAG = true;
+
+void sigint_handler(int received){
+	if (received == SIGINT){
+		printf("Process shutting down");
+		FLAG = false;
+	}
+}
+
+
 int main(int argc, char const *argv[]) {
 	printf("STARTING\n");
     const char *db_path = argv[1];
@@ -39,17 +49,22 @@ int main(int argc, char const *argv[]) {
 			i=4;
 		}
 	}
-	//TODO
-	if (pid!=0){
-    	db_save(&db, db_path);
-    	printf("Bye bye!\n");
-		printf("Sons : ");
-		for (int i=0; i<4; i++){
-			printf("%i, ", sons[i]);
+	if (pid!=0){//father
+		signal(SIGINT, sigint_handler);
+		char user_query[256];
+		while (FLAG && ((fscanf(stdin, "%s", user_query))==1)){
+			printf("%s\n", user_query);
 		}
-		printf("\n");
+			
+
+		//Ici procédure de fin de programme (à compléter)
+		//
+		//
+		db_save(&db, db_path);
+    	printf("Bye bye!\n");
+		}
 	}
-	else{
+	else{//son
 		printf("Im son ");
 	}
 	printf("%i\n", pid);
