@@ -34,6 +34,11 @@ bool parse_insert(char* query, char* fname, char* lname, unsigned* id, char* sec
     if (token == NULL) {
         return false;
     }
+	
+	token = strtok_r(NULL, " ", &query);
+	if (token == NULL) {
+		return false;
+	}
     strcpy(fname, token);
     token = strtok_r(NULL, " ", &query);
     if (token == NULL) {
