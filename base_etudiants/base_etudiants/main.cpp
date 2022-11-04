@@ -6,6 +6,7 @@
 #include <cstring>
 #include "query.h"
 #include "parsing.h"
+#include <wait.h>
 
 void sigint_handler(int received){
 	if (received == SIGINT){
@@ -85,10 +86,11 @@ int main(int argc, char const *argv[]) {
 				int query_number = identify_query(query);
 				printf("query.query after identify : %s\n", query.query);
 				if (query_number != -1){
-					printf("FATHE : I WRITE\n");
-					write(pipes[2*query_number][1], &query, sizeof(query_result_t));
+					printf("FATHER : I WRITE\n");
+					size_t michel = sizeof(query_result_t);
+					safe_write(pipes[2*query_number][1], &query, michel);
 					printf("FATHER : I READ\n");
-					read(pipes[2*query_number+1][0], &query, sizeof(query_result_t));
+					safe_read(pipes[2*query_number+1][0], &query, michel);
 					printf("FATHER : IM OUT, going for while stdin\n");
 					printf("FATHER : query.query after read : %s\n", query.query);
 				}
@@ -103,7 +105,7 @@ int main(int argc, char const *argv[]) {
 
 	else{//son
 		query_result_t query;
-		read(my_read, &query, sizeof(query_result_t));
+		safe_read(my_read, &query, sizeof(query_result_t));
 		printf("SON : done read\n");
 		printf("SON : query.query received : %s",query.query);
 		char* fname,*lname,*section,*field,*value,*field_to_update,*update_value;
@@ -113,8 +115,9 @@ int main(int argc, char const *argv[]) {
 		struct tm* birthdate=nullptr;
 		database_t data_base;
 		int query_number=identify_query(query);
-		bool everything_fine = true;
-		printf("SON : query_number before switch : %i\n", query_number);
+		bool everything_fine=true;
+		//printf("SON : query_number before switch : %d\n", query_number);
+		printf("ici 1");
 
 		if (query_number==0){
 			printf("SON : entered switch 0");
@@ -147,11 +150,12 @@ int main(int argc, char const *argv[]) {
 			else{everything_fine = false;}
 		}
 		else{everything_fine=false;}
-		if (everything_fine){printf("Wrong query argument given. Failed.");}
+		printf("ici 2");
+		if (!everything_fine){printf("Wrong query argument given. Failed.");}
 		printf("SON : I WRITE");
-		write(my_write, &query, sizeof(query_result_t));
+		safe_write(my_write, &query, sizeof(query_result_t));
 		printf("%i%i\n", my_read, my_write);
-		exit(0);//ATTENTION NE PAS SUPPRIMMER CETTE LIGNE TANT QUE LE PERE NE GERE PAS LA FIN DU PROGRAMME SINON T AURAS DES TINYDB QUI RUN SUR TON PC.
+		//exit(0);//ATTENTION NE PAS SUPPRIMMER CETTE LIGNE TANT QUE LE PERE NE GERE PAS LA FIN DU PROGRAMME SINON T AURAS DES TINYDB QUI RUN SUR TON PC.
 
 	}
 
