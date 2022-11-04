@@ -13,13 +13,14 @@ using std::endl;
 using std::strcpy;
 using std::invalid_argument;
 
-void insert(student_t* student, database_t *data_base){
+void insert(student_t* student, database_t *data_base, query_result_t *query){
 	for(unsigned long int i=0;i<data_base->lsize;i++ ){
 		if(data_base->data[i].id==student->id){
-			throw invalid_argument("The id where you want to set a new student already exist.");
+			query->status=QUERY_FAILURE;
 		}
 	}
 	db_add(data_base,*student); 
+	query_result_add(query, data_base->data[(data_base->lsize)-1]);  	
 	cout<<"student inserted with success"<<endl;
 }
 
@@ -89,7 +90,7 @@ vector<student_t*> select(string field , string value, database_t* data_base, qu
 		}
 	}
 	else{
-		throw invalid_argument("The data that you want to select doesn't exist.");
+		query->status=QUERY_FAILURE;
 	}
 	return sort_student_list;
 }
@@ -146,7 +147,7 @@ void delete_function(string field,string value , database_t* data_base, query_re
 		}
 	}
 	else{
-		throw invalid_argument("The data that you want to delete doesn't exist.");
+		query->status=QUERY_FAILURE;
 	}
 }
 
@@ -191,7 +192,7 @@ void update(string filter_field ,string value ,string modified_field ,char* new_
 		}
 	}
 	else{
-		throw invalid_argument("The data that you want to change doesn't exist.");
+		query->status=QUERY_FAILURE;
 	}
 }
 
