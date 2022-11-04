@@ -78,7 +78,6 @@ int main(int argc, char const *argv[]) {
 		signal(SIGINT, sigint_handler);
 		char user_query[256];
 		while (fgets(user_query, 256, stdin)){
-				printf("%s\n", user_query);
 				query_result_t query;
 				query_result_init(&query, user_query);
 				int query_number = identify_query(&query);
@@ -98,9 +97,46 @@ int main(int argc, char const *argv[]) {
 
 	else{//son
 		query_result_t *query_ptr = NULL;
-		exit(0);//ATTENTION NE PAS SUPPRIMMER CETTE LIGNE TANT QUE LE PERE NE GERE PAS LA FIN DU PROGRAMME SINON T AURAS DES TINYDB QUI RUN SUR TON PC.
 		read(my_read, query_ptr, sizeof(query_result_t*));
+		printf("%s",query_ptr->query);
+		char* fname,*lname,*section,*field,*value,*field_to_update,*update_value;
+		fname = lname = section = field = value = field_to_update = update_value=nullptr;
+
+		unsigned* id=nullptr;
+		struct tm* birthdate=nullptr;
+		database_t data_base;
+
+		switch (identify_query(query_ptr)){
+			case 0:{
+				parse_insert(query_ptr->query, fname, lname, id, section, birthdate);
+				student_t student={*id,{*fname,*lname,*section}};
+				student.birthdate=*birthdate;
+				insert(&student,&data_base);
+				printf(fname," ",lname," ",id," ",section," ",birthdate);
+				break;
+			}
+			case 1:{
+				parse_selectors(query_ptr->query, field, value);
+				select(field, value, &data_base, query_ptr);
+				break;
+			}
+			case 2:{
+				parse_selectors(query_ptr->query, field, value);
+				delete_function(field, value, &data_base, query_ptr);
+				printf(field," ",value);
+				break;
+			}
+			case 3:{
+				parse_update(query_ptr->query, field, value, field_to_update, update_value);
+				update(field, value, field_to_update, update_value, &data_base, query_ptr);
+				printf(field," ",value," ",field_to_update," ",update_value);
+				break;
+			}
+		}
+		
 		printf("%i%i\n", my_read, my_write);
+		exit(0);//ATTENTION NE PAS SUPPRIMMER CETTE LIGNE TANT QUE LE PERE NE GERE PAS LA FIN DU PROGRAMME SINON T AURAS DES TINYDB QUI RUN SUR TON PC.
+
 	}
 
 	//anti-crash : error: unused variable... lignes à supprimmer après implémentation
