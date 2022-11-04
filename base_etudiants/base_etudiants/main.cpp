@@ -14,9 +14,9 @@ void sigint_handler(int received){
 	}
 }
 
-int identify_query(query_result_t *query){
+int identify_query(query_result_t query){
 	char* temp;
-	temp = query->query;
+	temp = query.query;
 	char* query_first_word = strtok_r(NULL, " ", &temp);
 	if (strcmp(query_first_word, "insert")==0){
 		return 0;
@@ -80,10 +80,17 @@ int main(int argc, char const *argv[]) {
 		while (fgets(user_query, 256, stdin)){
 				query_result_t query;
 				query_result_init(&query, user_query);
-				int query_number = identify_query(&query);
+				printf("FATHER : query.query after query result init : %s\n", query.query);
+				printf("FATHER : user_query after fgets : %s\n", user_query);
+				int query_number = identify_query(query);
+				printf("query.query after identify : %s\n", query.query);
 				if (query_number != -1){
+					printf("FATHE : I WRITE\n");
 					write(pipes[2*query_number][1], &query, sizeof(query_result_t));
+					printf("FATHER : I READ\n");
 					read(pipes[2*query_number+1][0], &query, sizeof(query_result_t));
+					printf("FATHER : IM OUT, going for while stdin\n");
+					printf("FATHER : query.query after read : %s\n", query.query);
 				}
 				else{
 					printf("E: Wrong query. Use insert, select, delete, update\n");
@@ -97,43 +104,51 @@ int main(int argc, char const *argv[]) {
 	else{//son
 		query_result_t query;
 		read(my_read, &query, sizeof(query_result_t));
-		printf("UwU");
-		printf("%s",query.query);
+		printf("SON : done read\n");
+		printf("SON : query.query received : %s",query.query);
 		char* fname,*lname,*section,*field,*value,*field_to_update,*update_value;
 		fname = lname = section = field = value = field_to_update = update_value=nullptr;
 
 		unsigned* id=nullptr;
 		struct tm* birthdate=nullptr;
 		database_t data_base;
-		int query_number=identify_query(&query);
+		int query_number=identify_query(query);
+		bool everything_fine = true;
+		printf("SON : query_number before switch : %i\n", query_number);
 
-		switch (query_number){
-			case 0:{
-				parse_insert(query.query, fname, lname, id, section, birthdate);
+		if (query_number==0){
+			printf("SON : entered switch 0");
+			if (parse_insert(query.query, fname, lname, id, section, birthdate)){
 				student_t student={*id,{*fname,*lname,*section}};
 				student.birthdate=*birthdate;
 				insert(&student,&data_base);
 				printf(fname," ",lname," ",id," ",section," ",birthdate);
-				break;
 			}
-			case 1:{
-				parse_selectors(query.query, field, value);
+			else {everything_fine = false;}
+		}
+		else if (query_number==1){
+			if (parse_selectors(query.query, field, value)){
 				select(field, value, &data_base, &query);
-				break;
 			}
-			case 2:{
-				parse_selectors(query.query, field, value);
+			else{everything_fine = false;}
+		}
+		else if (query_number==2){
+			if (parse_selectors(query.query, field, value)){
 				delete_function(field, value, &data_base, &query);
 				printf(field," ",value);
-				break;
 			}
-			case 3:{
-				parse_update(query.query, field, value, field_to_update, update_value);
+			else{everything_fine = false;}
+		}
+		else if (query_number==3){
+			if (parse_update(query.query, field, value, field_to_update, update_value)){
 				update(field, value, field_to_update, update_value, &data_base, &query);
 				printf(field," ",value," ",field_to_update," ",update_value);
-				break;
 			}
+			else{everything_fine = false;}
 		}
+		else{everything_fine=false;}
+		if (everything_fine){printf("Wrong query argument given. Failed.");}
+		printf("SON : I WRITE");
 		write(my_write, &query, sizeof(query_result_t));
 		printf("%i%i\n", my_read, my_write);
 		exit(0);//ATTENTION NE PAS SUPPRIMMER CETTE LIGNE TANT QUE LE PERE NE GERE PAS LA FIN DU PROGRAMME SINON T AURAS DES TINYDB QUI RUN SUR TON PC.
