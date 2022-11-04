@@ -88,9 +88,7 @@ int main(int argc, char const *argv[]) {
 					printf("E: Wrong query. Use insert, select, delete, update\n");
 				}
 		}
-
 		//Ici procédure de fin de programme (à compléter)
-
 		db_save(&db, db_path);
     	printf("Bye bye!\n");
 	}
@@ -105,8 +103,9 @@ int main(int argc, char const *argv[]) {
 		unsigned* id=nullptr;
 		struct tm* birthdate=nullptr;
 		database_t data_base;
+		int query_number=identify_query(query_ptr);
 
-		switch (identify_query(query_ptr)){
+		switch (query_number){
 			case 0:{
 				parse_insert(query_ptr->query, fname, lname, id, section, birthdate);
 				student_t student={*id,{*fname,*lname,*section}};
@@ -133,7 +132,7 @@ int main(int argc, char const *argv[]) {
 				break;
 			}
 		}
-		
+		write(pipes[2*query_number+1][1], &query_ptr, sizeof(query_result_t*));
 		printf("%i%i\n", my_read, my_write);
 		exit(0);//ATTENTION NE PAS SUPPRIMMER CETTE LIGNE TANT QUE LE PERE NE GERE PAS LA FIN DU PROGRAMME SINON T AURAS DES TINYDB QUI RUN SUR TON PC.
 
