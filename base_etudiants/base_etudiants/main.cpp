@@ -82,7 +82,8 @@ int main(int argc, char const *argv[]) {
 				query_result_init(&query, user_query);
 				int query_number = identify_query(&query);
 				if (query_number != -1){
-					write(pipes[2*query_number][1], &query, sizeof(query_result_t*));
+					write(pipes[2*query_number][1], &query, sizeof(query_result_t));
+					read(pipes[2*query_number+1][0], &query, sizeof(query_result_t));
 				}
 				else{
 					printf("E: Wrong query. Use insert, select, delete, update\n");
@@ -94,20 +95,21 @@ int main(int argc, char const *argv[]) {
 	}
 
 	else{//son
-		query_result_t *query_ptr = NULL;
-		read(my_read, query_ptr, sizeof(query_result_t*));
-		printf("%s",query_ptr->query);
+		query_result_t query;
+		read(my_read, &query, sizeof(query_result_t));
+		printf("UwU");
+		printf("%s",query.query);
 		char* fname,*lname,*section,*field,*value,*field_to_update,*update_value;
 		fname = lname = section = field = value = field_to_update = update_value=nullptr;
 
 		unsigned* id=nullptr;
 		struct tm* birthdate=nullptr;
 		database_t data_base;
-		int query_number=identify_query(query_ptr);
+		int query_number=identify_query(&query);
 
 		switch (query_number){
 			case 0:{
-				parse_insert(query_ptr->query, fname, lname, id, section, birthdate);
+				parse_insert(query.query, fname, lname, id, section, birthdate);
 				student_t student={*id,{*fname,*lname,*section}};
 				student.birthdate=*birthdate;
 				insert(&student,&data_base);
@@ -115,24 +117,24 @@ int main(int argc, char const *argv[]) {
 				break;
 			}
 			case 1:{
-				parse_selectors(query_ptr->query, field, value);
-				select(field, value, &data_base, query_ptr);
+				parse_selectors(query.query, field, value);
+				select(field, value, &data_base, &query);
 				break;
 			}
 			case 2:{
-				parse_selectors(query_ptr->query, field, value);
-				delete_function(field, value, &data_base, query_ptr);
+				parse_selectors(query.query, field, value);
+				delete_function(field, value, &data_base, &query);
 				printf(field," ",value);
 				break;
 			}
 			case 3:{
-				parse_update(query_ptr->query, field, value, field_to_update, update_value);
-				update(field, value, field_to_update, update_value, &data_base, query_ptr);
+				parse_update(query.query, field, value, field_to_update, update_value);
+				update(field, value, field_to_update, update_value, &data_base, &query);
 				printf(field," ",value," ",field_to_update," ",update_value);
 				break;
 			}
 		}
-		write(pipes[2*query_number+1][1], &query_ptr, sizeof(query_result_t*));
+		write(my_write, &query, sizeof(query_result_t));
 		printf("%i%i\n", my_read, my_write);
 		exit(0);//ATTENTION NE PAS SUPPRIMMER CETTE LIGNE TANT QUE LE PERE NE GERE PAS LA FIN DU PROGRAMME SINON T AURAS DES TINYDB QUI RUN SUR TON PC.
 
