@@ -140,6 +140,7 @@ void delete_function(string field,string value , database_t* data_base, query_re
 
 			if (delete_student){
 				db_remove(data_base, i); //ici lsize-- est execute
+				printf("%s\n", "student deleted with success");
 				i--; //!!! On fait ça car le student indice i va etre remplace par le suivant et on doit aussi le controler!!!
 			}
 		}

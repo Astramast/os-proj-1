@@ -167,7 +167,7 @@ int main(int argc, char const *argv[]) {
 		}
 		else{everything_fine=false;}
 		if (!everything_fine){printf("Wrong query argument given. Failed.\n");}
-		printf("%s, %s, %s, %s, %s, %s, %s, %i.\n", fname, lname, section, field, value, field_to_update, update_value, id);
+		//printf("%s, %s, %s, %s, %s, %s, %s, %i.\n", fname, lname, section, field, value, field_to_update, update_value, id);
 		printf("SON : I WRITE\n");
 		safe_write(my_write, &query, sizeof(query_result_t));
 		printf("%i%i\n", my_read, my_write);
