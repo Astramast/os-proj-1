@@ -11,15 +11,7 @@ bool END=false;
 
 void sigint_handler(int received){
 	if (received == SIGINT){
-		printf(" Process shutting down, press <ENTER>\n");
 		END=true;
-	}
-}
-
-void sigfather_handler(int received){
-	if (received == 100){
-		END=true;
-		close(my_read);
 	}
 }
 
@@ -76,11 +68,14 @@ int main(int argc, char const *argv[]) {
 			i=4;
 		}
 	}
+	signal(SIGINT, sigint_handler);
 	if (pid!=0){//father
-		signal(SIGINT, sigint_handler);
 		char user_query[256];
 		while (fgets(user_query, 256, stdin)){
-			if (END){break;}
+			if (END){
+				printf("Process shutting down, press <ENTER>");
+				break;
+			}
 			query_result_t query;
 			query_result_init(&query, user_query);
 			int query_number = identify_query(query);
@@ -91,20 +86,18 @@ int main(int argc, char const *argv[]) {
 				printf("E: Wrong query. Use insert, select, delete, update\n");
 			}
 		}
-		//Ici procédure de fin de programme (à compléter)
-		//creer le fichier si necessaire pour update et select jcrois
-		//suivre l exemple du pdf
-		//fermer les pipes a fermer
+		//Ici procédure de fin de programme
 		for (int i=0; i<4; i++){
+			kill(sons[i], SIGINT);
+			int temp=EOF;
+			write(pipes[i][1], &temp, sizeof(int));
 			close(pipes[i][1]);
-			kill(sons[i], 100);
 		}
 		db_save(&db, db_path);
     	printf("Bye bye!\n");
 	}
 
 	else{//son
-		signal(100, sigfather_handler);
 		while (!END){
 			query_result_t query;
 			safe_read(my_read, &query, sizeof(query_result_t));
@@ -154,15 +147,12 @@ int main(int argc, char const *argv[]) {
 				else{everything_fine = false;}
 			}
 			else{everything_fine=false;}
-			if (!everything_fine){printf("Wrong query argument given. Failed.\n");}
+			if ((!everything_fine) && (!END)){printf("Wrong query argument given. Failed.\n");}
 			struct timespec now;
 			clock_gettime(CLOCK_REALTIME, &now);
 			query.end_ns = now.tv_nsec + 1e9 * now.tv_sec;
 			log_query(&query);
 		}
 	}
-
-	//anti-crash : error: unused variable... lignes à supprimmer après implémentation
-	printf("%i\n", sons[1]);
     return 0;
 }
