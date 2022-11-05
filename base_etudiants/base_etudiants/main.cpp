@@ -107,6 +107,9 @@ int main(int argc, char const *argv[]) {
 				}
 		}
 		//Ici procédure de fin de programme (à compléter)
+		//creer le fichier si necessaire pour update et select jcrois
+		//suivre l exemple du pdf
+		//fermer les pipes a fermer
 		db_save(&db, db_path);
     	printf("Bye bye!\n");
 	}
@@ -137,7 +140,7 @@ int main(int argc, char const *argv[]) {
 				strcpy(student.lname, lname);
 				strcpy(student.section, section);
 				student.birthdate=birthdate;
-				insert(&student, &db);
+				insert(&student, &db,&query);
 			}
 			else {everything_fine = false;}
 		}
@@ -161,6 +164,7 @@ int main(int argc, char const *argv[]) {
 		}
 		else{everything_fine=false;}
 		if (!everything_fine){printf("Wrong query argument given. Failed.\n");}
+		//faire temps query end, query debut est deja setup ds query init
 		safe_write(my_write, &query, sizeof(query_result_t));
 
 	}
