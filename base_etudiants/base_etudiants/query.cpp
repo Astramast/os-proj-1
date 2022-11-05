@@ -14,15 +14,19 @@ using std::strcpy;
 using std::invalid_argument;
 
 void insert(student_t* student, database_t *data_base, query_result_t *query){
+	bool flag = true;
 	for(unsigned long int i=0;i<data_base->lsize;i++ ){
 		if(data_base->data[i].id==student->id){
 			query->status=QUERY_FAILURE;
 			printf("The id where you want to set a new student already exist.\n");
+			flag = false;
 		}
 	}
-	db_add(data_base,*student);
-	query_result_add(query, data_base->data[(data_base->lsize)-1]);
-	printf("Student inserted with success\n");
+	if (flag){
+		db_add(data_base,*student);
+		query_result_add(query, data_base->data[(data_base->lsize)-1]);
+		printf("Student inserted with success\n");
+	}
 }
 
 bool data_analyse(string field){
@@ -226,25 +230,3 @@ void query_result_extend_memory(query_result_t *res){
 	res->psize = 10*res->psize;
 }
 
-void query_result_log(query_result_t *query, const char* file_path){
-	FILE *file = fopen(file_path, "w");
-	if (file != NULL){
-		fputs("Etudiants concernés", file);
-		for (size_t i=0; i<query->lsize; i++){
-			char temp[1000];
-			student_to_str(temp, &query->students[i]);
-			fputs(temp, file);
-		}
-		char temp[356];
-		snprintf(temp, 356, "Query status : %i\n", query->status);
-		fputs(temp, file);
-		snprintf(temp, 356, "Query request : %s\n", query->query);
-		fputs(temp, file);
-		snprintf(temp, 356, "Query start time : %li\n", query->start_ns);
-		fputs(temp, file);
-		snprintf(temp, 356, "Query end time : %li\n", query->end_ns);
-		fputs(temp, file);
-		fclose(file);
-	}
-	else{perror(file_path);}
-}

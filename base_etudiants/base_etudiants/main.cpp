@@ -7,10 +7,12 @@
 #include "parsing.h"
 #include "utils.h"
 
+bool END=false;
+
 void sigint_handler(int received){
 	if (received == SIGINT){
-		printf("Process shutting down\n");
-		exit(-12);
+		printf(" Process shutting down, press <ENTER>\n");
+		END=true;
 	}
 }
 
@@ -71,20 +73,24 @@ int main(int argc, char const *argv[]) {
 		signal(SIGINT, sigint_handler);
 		char user_query[256];
 		while (fgets(user_query, 256, stdin)){
-				query_result_t query;
-				query_result_init(&query, user_query);
-				int query_number = identify_query(query);
-				if (query_number != -1){
-					safe_write(pipes[query_number][1], &query, sizeof(query_result_t));
-				}
-				else{
-					printf("E: Wrong query. Use insert, select, delete, update\n");
-				}
+			if (END){break;}
+			query_result_t query;
+			query_result_init(&query, user_query);
+			int query_number = identify_query(query);
+			if (query_number != -1){
+				safe_write(pipes[query_number][1], &query, sizeof(query_result_t));
+			}
+			else{
+				printf("E: Wrong query. Use insert, select, delete, update\n");
+			}
 		}
 		//Ici procédure de fin de programme (à compléter)
 		//creer le fichier si necessaire pour update et select jcrois
 		//suivre l exemple du pdf
 		//fermer les pipes a fermer
+		for (int i=0; i<4; i++){
+			close(pipes[i][1]);
+		}
 		db_save(&db, db_path);
     	printf("Bye bye!\n");
 	}

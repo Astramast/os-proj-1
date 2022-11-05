@@ -35,11 +35,11 @@ void db_load(database_t *db, const char *path) {
 
 void db_init(database_t *db) {
 	printf("Entered db_init\n");
-	db->data = (student_t*) malloc(sizeof(student_t)*1000000);
+	db->data = (student_t*) malloc(sizeof(student_t)*100);
 	if (db->data == NULL){
 		perror("DB's size too large for memory-chan TwT'");
 	}
-	db->psize = 1000000*sizeof(student_t);
+	db->psize = 100*sizeof(student_t);
 	db->lsize = 0;
 }
 
@@ -51,7 +51,7 @@ void db_add(database_t *db, student_t student) {
 
 void db_extend_memory(database_t *db){
 	student_t* temp;
-	temp = new student_t[10*(db->psize)];
+	temp = (student_t*) malloc(10*(db->psize));
 	memcpy(temp, db->data, sizeof(student_t)*db->lsize);
 	free(db->data);
 	db->data = temp;
