@@ -82,6 +82,7 @@ int main(int argc, char const *argv[]) {
 			if (query_number != -1){
 				printf("Query is %s", query.query);
 				safe_write(pipes[query_number][1], &query, sizeof(query_result_t));
+				sleep(1);
 			}
 			else{
 				printf("E: Wrong query. Use insert, select, delete, update\n");
@@ -155,6 +156,7 @@ int main(int argc, char const *argv[]) {
 			clock_gettime(CLOCK_REALTIME, &now);
 			query.end_ns = now.tv_nsec + 1e9 * now.tv_sec;
 			log_query(&query);
+			sleep(1);
 		}
 	}
     return 0;
