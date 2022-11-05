@@ -17,12 +17,12 @@ void insert(student_t* student, database_t *data_base, query_result_t *query){
 	for(unsigned long int i=0;i<data_base->lsize;i++ ){
 		if(data_base->data[i].id==student->id){
 			query->status=QUERY_FAILURE;
-			cout<<"The id where you want to set a new student already exist."<<endl;
+			printf("The id where you want to set a new student already exist.\n");
 		}
 	}
-	db_add(data_base,*student); 
-	query_result_add(query, data_base->data[(data_base->lsize)-1]);  	
-	cout<<"student inserted with success"<<endl;
+	db_add(data_base,*student);
+	query_result_add(query, data_base->data[(data_base->lsize)-1]);
+	printf("Student inserted with success\n");
 }
 
 bool data_analyse(string field){
@@ -92,7 +92,7 @@ vector<student_t*> select(string field , string value, database_t* data_base, qu
 	}
 	else{
 		query->status=QUERY_FAILURE;
-		printf("%s\n","The data that you want to select doesn't exist.");
+		printf("The data that you want to select doesn't exist.\n");
 	}
 	return sort_student_list;
 }
@@ -142,15 +142,15 @@ void delete_function(string field,string value , database_t* data_base, query_re
 			}
 
 			if (delete_student){
-				db_remove(data_base, i); //there lsize-- is execute
-				printf("%s\n", "student deleted with success");
-				i--; //here we do that because the student index, i is replaced by the following student and we need to control this too.
+				db_remove(data_base, i); //Here lsize-- is executed
+				printf("Student deleted with success\n");
+				i--; //Here we do that because the student index, i is replaced by the following student and we need to verify it too.
 			}
 		}
 	}
 	else{
 		query->status=QUERY_FAILURE;
-		printf("%s\n","The data that you want to delete doesn't exist.");
+		printf("The data that you want to delete doesn't exist.\n");
 	}
 }
 
@@ -196,7 +196,7 @@ void update(string filter_field ,string value ,string modified_field ,char* new_
 	}
 	else{
 		query->status=QUERY_FAILURE;
-		printf("%s\n","The data that you want to change doesn't exist.");
+		printf("The data that you want to change doesn't exist.\n");
 	}
 }
 

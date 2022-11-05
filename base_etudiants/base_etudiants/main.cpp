@@ -5,30 +5,13 @@
 #include <cstring>
 #include "query.h"
 #include "parsing.h"
+#include "utils.h"
 
 void sigint_handler(int received){
 	if (received == SIGINT){
 		printf("Process shutting down\n");
 		exit(-12);
 	}
-}
-
-size_t safe_read(int fd, void* buffer, size_t nbytes) {
-    ssize_t nbytes_read = read(fd, buffer, nbytes);
-    if (nbytes_read < 0) {
-        perror("read error: ");
-        exit(1);
-    }
-    return (size_t)nbytes_read;
-}
-
-size_t safe_write(int fd, const void* buffer, size_t nbytes) {
-    ssize_t bytes_written = write(fd, buffer, nbytes);
-    if (bytes_written < 0) {
-        perror("write: ");
-        exit(1);
-    }
-    return (size_t)bytes_written;
 }
 
 int identify_query(query_result_t query){
@@ -62,17 +45,13 @@ int main(int argc, char const *argv[]) {
     db_init(&db);
     db_load(&db, db_path);
 	int sons[4];
-	int insert_pipe_father[2];
-	int insert_pipe_son[2];
-	int select_pipe_father[2];
-	int select_pipe_son[2];
-	int delete_pipe_father[2];
-	int delete_pipe_son[2];
-	int update_pipe_father[2];
-	int update_pipe_son[2];
-	int* pipes[8] = {insert_pipe_father, insert_pipe_son, select_pipe_father, select_pipe_son, delete_pipe_father, delete_pipe_son, update_pipe_father, update_pipe_son};
-	int my_read, my_write;
-	for (int i=0; i<8; i++){
+	int insert_pipe[2];
+	int select_pipe[2];
+	int delete_pipe[2];
+	int update_pipe[2];
+	int* pipes[4] = {insert_pipe, select_pipe, delete_pipe, update_pipe,};
+	int my_read;
+	for (int i=0; i<4; i++){
 		pipe(pipes[i]);
 	}
 	int pid;
@@ -80,14 +59,11 @@ int main(int argc, char const *argv[]) {
 		pid = fork();
 		if (pid !=0){
 			sons[i]=pid;
-			close(pipes[2*i][0]);
-			close(pipes[2*i+1][1]);
+			close(pipes[i][0]);
 		}
 		else{
-			close(pipes[2*i][1]);
-			close(pipes[2*i+1][0]);
-			my_read = pipes[2*i][0];
-			my_write = pipes[2*i+1][1];
+			close(pipes[i][1]);
+			my_read = pipes[i][0];
 			i=4;
 		}
 	}
@@ -99,8 +75,7 @@ int main(int argc, char const *argv[]) {
 				query_result_init(&query, user_query);
 				int query_number = identify_query(query);
 				if (query_number != -1){
-					safe_write(pipes[2*query_number][1], &query, sizeof(query_result_t));
-					safe_read(pipes[2*query_number+1][0], &query, sizeof(query_result_t));
+					safe_write(pipes[query_number][1], &query, sizeof(query_result_t));
 				}
 				else{
 					printf("E: Wrong query. Use insert, select, delete, update\n");
@@ -164,8 +139,10 @@ int main(int argc, char const *argv[]) {
 		}
 		else{everything_fine=false;}
 		if (!everything_fine){printf("Wrong query argument given. Failed.\n");}
-		//faire temps query end, query debut est deja setup ds query init
-		safe_write(my_write, &query, sizeof(query_result_t));
+		struct timespec now;
+		clock_gettime(CLOCK_REALTIME, &now);
+		query.end_ns = now.tv_nsec + 1e9 * now.tv_sec;
+		log_query(&query);
 
 	}
 

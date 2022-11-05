@@ -30,14 +30,14 @@ void log_query(query_result_t* result) {
         char type[256];
         strcpy(type, result->query);
         type[6] = '\0';
-        sprintf(filename, "logs/%ld-%s.txt", result->start_ns, type);
+        snprintf(filename, 512, "logs/%ld-%s.txt", result->start_ns, type);
         printf("%s\n", filename);
         FILE* f = fopen(filename, "w");
         float duration = (float)(result->end_ns - result->start_ns) / 1.0e6;
-        sprintf(buffer, "Query \"%s\" completed in %fms with %ld results.\n", result->query, duration, result->lsize);
+        snprintf(buffer, 512, "Query \"%s\" completed in %fms with %ld results.\n", result->query, duration, result->lsize);
         fwrite(buffer, sizeof(char), strlen(buffer), f);
         if (result->lsize > 0) {
-            for (int i = 0; i < result->lsize; i++) {
+            for (size_t i = 0; i < result->lsize; i++) {
                 student_to_str(buffer, &result->students[i]);
                 fwrite(buffer, sizeof(char), strlen(buffer), f);
                 fwrite("\n", sizeof(char), 1, f);
