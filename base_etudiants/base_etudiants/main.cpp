@@ -80,7 +80,7 @@ int main(int argc, char const *argv[]) {
 			query_result_init(&query, user_query);
 			int query_number = identify_query(query);
 			if (query_number != -1){
-				printf("Query is %s", query.query);
+				printf("Query is %i, %s", pipes[query_number][1], query.query);
 				safe_write(pipes[query_number][1], &query, sizeof(query_result_t));
 				sleep(1);
 			}
