@@ -7,7 +7,6 @@
 #include "parsing.h"
 #include "utils.h"
 #include <sys/wait.h>
-#include <sys/mman.h>
 
 bool END=false;
 bool USR1=false;
@@ -43,18 +42,6 @@ int identify_query(query_result_t query){
 	return -1;
 }
 
-void *create_shared_memory(size_t size) {
-	//size is the number of bytes allocate to the mmap
-	const int protection = PROT_READ | PROT_WRITE;
-
-	// The buffer will be shared (meaning other processes can access it), but
-	// anonymous (meaning third-party processes cannot obtain an address for it),
-	// so only this process and its children will be able to use it:
-	const int visibility = MAP_SHARED | MAP_ANONYMOUS;
-
-	return mmap(NULL, size, protection, visibility, 0, 0);
-}
-
 int main(int argc, char const *argv[]) {
 	printf("STARTING\n");
     const char *db_path = argv[1];
@@ -66,10 +53,7 @@ int main(int argc, char const *argv[]) {
 	database_t db;
     db_init(&db);
     db_load(&db, db_path);
-	//db =(database_t)create_shared_memory(db.lsize);
-	db.data =(student_t*) mmap(NULL, db.lsize, PROT_READ | PROT_WRITE, MAP_SHARED, 0,0);
-	db.lsize =(size_t) mmap(NULL, db.lsize, PROT_READ | PROT_WRITE, MAP_SHARED, 0,0);
-	db.psize =(size_t) mmap(NULL, db.lsize, PROT_READ | PROT_WRITE, MAP_SHARED, 0,0);
+	
 	int sons[4];
 	int insert_pipe[2];
 	int select_pipe[2];

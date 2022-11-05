@@ -3,8 +3,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
+#include <sys/mman.h>
 #include "student.h"
+
+
+void *create_shared_memory(size_t size) {
+	//size is the number of bytes allocate to the mmap
+	const int protection = PROT_READ | PROT_WRITE;
+
+	// The buffer will be shared (meaning other processes can access it), but
+	// anonymous (meaning third-party processes cannot obtain an address for it),
+	// so only this process and its children will be able to use it:
+	const int visibility = MAP_SHARED | MAP_ANONYMOUS;
+
+	return mmap(NULL, size, protection, visibility, -1, 0);
+}
 
 void db_save(database_t *db, const char *path) {
     FILE *f = fopen(path, "wb");
@@ -35,7 +48,7 @@ void db_load(database_t *db, const char *path) {
 
 void db_init(database_t *db) {
 	printf("Entered db_init\n");
-	db->data = (student_t*) malloc(sizeof(student_t)*100);
+	db->data = (student_t*) create_shared_memory(sizeof(student_t)*100);
 	if (db->data == NULL){
 		perror("DB's size too large for memory-chan TwT'");
 	}
@@ -50,12 +63,15 @@ void db_add(database_t *db, student_t student) {
 }
 
 void db_extend_memory(database_t *db){
-	student_t* temp;
-	temp = (student_t*) malloc(10*(db->psize));
-	memcpy(temp, db->data, sizeof(student_t)*db->lsize);
-	free(db->data);
-	db->data = temp;
-	db->psize = 10*db->psize;
+	
+	if (db->lsize >= db->psize) {
+		student_t* old_value = db->data;
+		size_t old_psize = db->psize;
+		db->psize = db->psize * 2;
+		db->data = (student_t*)mmap(db->data, 10*(db->psize), PROT_READ | PROT_WRITE, MAP_FIXED, -1, 0);
+		memcpy(db->data, old_value, old_psize*sizeof(student_t));
+		munmap(old_value, sizeof(old_value));
+  }
 }
 
 void db_remove(database_t* db, int indice){
