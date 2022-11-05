@@ -75,12 +75,12 @@ int main(int argc, char const *argv[]) {
 			if (END){
 				break;
 			}
-			user_query[strcspn(user_query, "\n")] = 0;
 
 			query_result_t query;
 			query_result_init(&query, user_query);
 			int query_number = identify_query(query);
 			if (query_number != -1){
+				printf("Query is %s", query.query);
 				safe_write(pipes[query_number][1], &query, sizeof(query_result_t));
 			}
 			else{
@@ -150,6 +150,7 @@ int main(int argc, char const *argv[]) {
 			}
 			else{everything_fine=false;}
 			if ((!everything_fine) && (!END)){printf("Wrong query argument given. Failed.\n");}
+			query.query[strcspn(query.query, "\n")]=0;
 			struct timespec now;
 			clock_gettime(CLOCK_REALTIME, &now);
 			query.end_ns = now.tv_nsec + 1e9 * now.tv_sec;
