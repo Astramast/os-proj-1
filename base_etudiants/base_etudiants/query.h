@@ -80,10 +80,4 @@ void query_result_extend_memory(query_result_t *res);
  * @brief: extend the memory of the student list in res if we need to
  */
 
-void query_result_log(query_result_t *query, string file_path);
-/**
- * @brief 
- * 
- */
-
 #endif
