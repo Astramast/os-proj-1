@@ -16,6 +16,13 @@ void sigint_handler(int received){
 	}
 }
 
+void sigfather_handler(int received){
+	if (received == 100){
+		END=true;
+		close(my_read);
+	}
+}
+
 int identify_query(query_result_t query){
 	char* temp;
 	temp = query.query;
@@ -90,66 +97,69 @@ int main(int argc, char const *argv[]) {
 		//fermer les pipes a fermer
 		for (int i=0; i<4; i++){
 			close(pipes[i][1]);
+			kill(sons[i], 100);
 		}
 		db_save(&db, db_path);
     	printf("Bye bye!\n");
 	}
 
 	else{//son
-		query_result_t query;
-		safe_read(my_read, &query, sizeof(query_result_t));
-		char query_parsing[256];
-		strcpy(query_parsing, query.query);
-		char fname[64];
-		char lname[64];
-		char section[64];
-		char field[256];
-		char value[256];
-		char field_to_update[256];
-		char update_value[256];
-
-		unsigned id;
-		struct tm birthdate;
-		int query_number=identify_query(query);
-		bool everything_fine=true;
-
-		if (query_number==0){
-			if (parse_insert(query_parsing, fname, lname, &id, section, &birthdate)){
-				student_t student;
-				student.id = id;
-				strcpy(student.fname, fname);
-				strcpy(student.lname, lname);
-				strcpy(student.section, section);
-				student.birthdate=birthdate;
-				insert(&student, &db,&query);
+		signal(100, sigfather_handler);
+		while (!END){
+			query_result_t query;
+			safe_read(my_read, &query, sizeof(query_result_t));
+			char query_parsing[256];
+			strcpy(query_parsing, query.query);
+			char fname[64];
+			char lname[64];
+			char section[64];
+			char field[256];
+			char value[256];
+			char field_to_update[256];
+			char update_value[256];
+	
+			unsigned id;
+			struct tm birthdate;
+			int query_number=identify_query(query);
+			bool everything_fine=true;
+	
+			if (query_number==0){
+				if (parse_insert(query_parsing, fname, lname, &id, section, &birthdate)){
+					student_t student;
+					student.id = id;
+					strcpy(student.fname, fname);
+					strcpy(student.lname, lname);
+					strcpy(student.section, section);
+					student.birthdate=birthdate;
+					insert(&student, &db,&query);
+				}
+				else {everything_fine = false;}
 			}
-			else {everything_fine = false;}
-		}
-		else if (query_number==1){
-			if (parse_selectors(query_parsing, field, value)){
-				select(field, value, &db, &query);
+			else if (query_number==1){
+				if (parse_selectors(query_parsing, field, value)){
+					select(field, value, &db, &query);
+				}
+				else{everything_fine = false;}
 			}
-			else{everything_fine = false;}
-		}
-		else if (query_number==2){
-			if (parse_selectors(query_parsing, field, value)){
-				delete_function(field, value, &db, &query);
+			else if (query_number==2){
+				if (parse_selectors(query_parsing, field, value)){
+					delete_function(field, value, &db, &query);
+				}
+				else{everything_fine = false;}
 			}
-			else{everything_fine = false;}
-		}
-		else if (query_number==3){
-			if (parse_update(query_parsing, field, value, field_to_update, update_value)){
-				update(field, value, field_to_update, update_value, &db, &query);
+			else if (query_number==3){
+				if (parse_update(query_parsing, field, value, field_to_update, update_value)){
+					update(field, value, field_to_update, update_value, &db, &query);
+				}
+				else{everything_fine = false;}
 			}
-			else{everything_fine = false;}
+			else{everything_fine=false;}
+			if (!everything_fine){printf("Wrong query argument given. Failed.\n");}
+			struct timespec now;
+			clock_gettime(CLOCK_REALTIME, &now);
+			query.end_ns = now.tv_nsec + 1e9 * now.tv_sec;
+			log_query(&query);
 		}
-		else{everything_fine=false;}
-		if (!everything_fine){printf("Wrong query argument given. Failed.\n");}
-		struct timespec now;
-		clock_gettime(CLOCK_REALTIME, &now);
-		query.end_ns = now.tv_nsec + 1e9 * now.tv_sec;
-		log_query(&query);
-
 	}
 
 	//anti-crash : error: unused variable... lignes à supprimmer après implémentation
