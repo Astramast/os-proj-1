@@ -6,12 +6,20 @@
 #include "query.h"
 #include "parsing.h"
 #include "utils.h"
+#include <wait.h>
 
 bool END=false;
+bool USR1=false;
 
 void sigint_handler(int received){
 	if (received == SIGINT){
 		END=true;
+	}
+}
+
+void sigusr1_handler(int received){
+	if (received == SIGUSR1){
+		USR1=true;
 	}
 }
 
@@ -70,10 +78,15 @@ int main(int argc, char const *argv[]) {
 	}
 	signal(SIGINT, sigint_handler);
 	if (pid!=0){//father
+		signal(SIGUSR1, sigusr1_handler);
 		char user_query[256];
 		while (fgets(user_query, 256, stdin)){
 			if (END){
 				break;
+			}
+
+			if (USR1){
+				db_save(&db, db_path);
 			}
 
 			query_result_t query;
@@ -94,6 +107,8 @@ int main(int argc, char const *argv[]) {
 			int temp=EOF;
 			write(pipes[i][1], &temp, sizeof(int));
 			close(pipes[i][1]);
+			int state;
+			wait(&state);
 		}
 		db_save(&db, db_path);
     	printf("Bye bye!\n");
