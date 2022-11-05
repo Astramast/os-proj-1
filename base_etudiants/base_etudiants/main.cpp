@@ -103,7 +103,7 @@ int main(int argc, char const *argv[]) {
 		while (!END){
 			query_result_t query;
 			safe_read(my_read, &query, sizeof(query_result_t));
-			printf("Running query '%s'\n", query.query);
+			printf("Running query '%i,%s'\n", my_read, query.query);
 			char query_parsing[256];
 			strcpy(query_parsing, query.query);
 			char fname[64];
