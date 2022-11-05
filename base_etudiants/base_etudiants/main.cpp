@@ -6,7 +6,7 @@
 #include "query.h"
 #include "parsing.h"
 #include "utils.h"
-#include <wait.h>
+#include <sys/wait.h>
 
 bool END=false;
 bool USR1=false;
