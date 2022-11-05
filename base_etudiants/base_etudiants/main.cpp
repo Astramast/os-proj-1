@@ -75,6 +75,8 @@ int main(int argc, char const *argv[]) {
 			if (END){
 				break;
 			}
+			user_query[strcspn(user_query, "\n")] = 0;
+
 			query_result_t query;
 			query_result_init(&query, user_query);
 			int query_number = identify_query(query);
@@ -85,7 +87,7 @@ int main(int argc, char const *argv[]) {
 				printf("E: Wrong query. Use insert, select, delete, update\n");
 			}
 		}
-		//Ici procédure de fin de programme
+		//End of program procedure
 		for (int i=0; i<4; i++){
 			kill(sons[i], SIGINT);
 			int temp=EOF;
