@@ -73,7 +73,6 @@ int main(int argc, char const *argv[]) {
 		char user_query[256];
 		while (fgets(user_query, 256, stdin)){
 			if (END){
-				printf("Process shutting down, press <ENTER>");
 				break;
 			}
 			query_result_t query;
