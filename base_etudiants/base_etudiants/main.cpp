@@ -81,6 +81,7 @@ int main(int argc, char const *argv[]) {
 	if (pid!=0){//father
 		signal(SIGUSR1, sigusr1_handler);
 		char user_query[256];
+		int state;
 		while (fgets(user_query, 256, stdin)){
 			if (END){
 				break;
@@ -90,6 +91,11 @@ int main(int argc, char const *argv[]) {
 				db_save(&db, db_path);
 			}
 
+			if(strcmp(user_query,"transaction")==0){
+				for (int i=0; i<4; i++){
+					wait(&state);
+				}
+			}
 			query_result_t query;
 			query_result_init(&query, user_query);
 			int query_number = identify_query(query);
@@ -98,6 +104,7 @@ int main(int argc, char const *argv[]) {
 				safe_write(pipes[query_number][1], &query, sizeof(query_result_t));
 				sleep(1);
 			}
+
 			else{
 				printf("E: Wrong query. Use insert, select, delete, update\n");
 			}

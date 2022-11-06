@@ -48,8 +48,6 @@ void db_load(database_t *db, const char *path) {
 
 void db_init(database_t *db) {
 	printf("Entered db_init\n");
-	db->psize = create_shared_memory(100*sizeof(student_t));
-	db->lsize = create_shared_memory(0);	
 	db->data = (student_t*) create_shared_memory(sizeof(student_t)*100);
 	if (db->data == NULL){
 		perror("DB's size too large for memory-chan TwT'");
@@ -63,11 +61,11 @@ void db_add(database_t *db, student_t student) {
 }
 
 void db_extend_memory(database_t *db){
-
+	printf("test");
 	student_t* old_value = db->data;
 	size_t old_psize = db->psize;
 	db->psize = db->psize * 2;
-	db->data = (student_t*)mmap(db->data, 10*(db->psize), PROT_READ | PROT_WRITE, MAP_FIXED, -1, 0);
+	db->data = (student_t*)mmap(db->data, 10*(db->psize), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 	memcpy(db->data, old_value, old_psize*sizeof(student_t));
 	munmap(old_value, sizeof(old_value)*old_psize);
 
