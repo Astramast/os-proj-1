@@ -79,6 +79,7 @@ int main(int argc, char const *argv[]) {
 	}
 	signal(SIGINT, sigint_handler);
 	if (pid!=0){//father
+		bool is_transaction_on = true;
 		signal(SIGUSR1, sigusr1_handler);
 		char user_query[256];
 		int state;
@@ -92,6 +93,9 @@ int main(int argc, char const *argv[]) {
 			}
 
 			if(strcmp(user_query,"transaction")==0){
+				is_transaction_on = not(is_transaction_on);
+			}
+			if (is_transaction_on){
 				for (int i=0; i<4; i++){
 					wait(&state);
 				}
