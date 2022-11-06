@@ -34,7 +34,7 @@ void db_save(database_t *db, const char *path) {
 
 void db_load(database_t *db, const char *path) {
 	printf("Entered db_load\n");
-    FILE *file = fopen(path, "rb");//cause du bug
+    FILE *file = fopen(path, "rb");//bloque ici
     if (!file) {
         perror("Could not open the DB file");
         exit(1);
@@ -48,7 +48,7 @@ void db_load(database_t *db, const char *path) {
 
 void db_init(database_t *db) {
 	printf("Entered db_init\n");
-	db->data = (student_t*) create_shared_memory(sizeof(student_t)*100);
+	db->data = (student_t*) create_shared_memory(sizeof(student_t)*100);//bug peut etre ici
 	if (db->data == NULL){
 		perror("DB's size too large for memory-chan TwT'");
 	}
