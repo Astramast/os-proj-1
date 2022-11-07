@@ -111,8 +111,10 @@ int main(int argc, char const *argv[]) {
 				db_save(&db, db_path);
 			}
 
+			printf("%s", user_query);
 			if(strcmp(user_query,"transaction")==0){
-				is_transaction_on = not(is_transaction_on);
+				printf("UDA");
+				is_transaction_on = true;
 			}
 
 			query_result_t query;
@@ -126,6 +128,7 @@ int main(int argc, char const *argv[]) {
 					int temp;
 					read(pipes[2*i+1][0], &temp, sizeof(int));
 				}
+				is_transaction_on = false;
 			}
 			else{
 				int query_number = identify_query(query);
