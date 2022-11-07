@@ -13,14 +13,20 @@ using std::endl;
 using std::strcpy;
 using std::invalid_argument;
 
-void insert(student_t* student, database_t *data_base){
+void insert(student_t* student, database_t *data_base, query_result_t *query){
+	bool flag = true;
 	for(unsigned long int i=0;i<data_base->lsize;i++ ){
 		if(data_base->data[i].id==student->id){
-			throw invalid_argument("The id where you want to set a new student already exist.");
+			query->status=QUERY_FAILURE;
+			printf("The id where you want to set a new student already exist.\n");
+			flag = false;
 		}
 	}
-	db_add(data_base,*student); 
-	cout<<"student inserted with success"<<endl;
+	if (flag){
+		db_add(data_base,*student);
+		query_result_add(query, data_base->data[(data_base->lsize)-1]);
+		printf("Student inserted with success\n");
+	}
 }
 
 bool data_analyse(string field){
@@ -78,7 +84,7 @@ vector<student_t*> select(string field , string value, database_t* data_base, qu
 			}
 
 			else if(field =="birthdate"){
-				char* student_bd_temp=nullptr;
+				char student_bd_temp[256];
 				tm* student_tm = &data_base->data[i].birthdate;
 				strftime(student_bd_temp, 10, "%d/%m/%Y", student_tm);
 				if(student_bd_temp == value){
@@ -89,7 +95,8 @@ vector<student_t*> select(string field , string value, database_t* data_base, qu
 		}
 	}
 	else{
-		throw invalid_argument("The data that you want to select doesn't exist.");
+		query->status=QUERY_FAILURE;
+		printf("The data that you want to select doesn't exist.\n");
 	}
 	return sort_student_list;
 }
@@ -139,13 +146,15 @@ void delete_function(string field,string value , database_t* data_base, query_re
 			}
 
 			if (delete_student){
-				db_remove(data_base, i); //ici lsize-- est execute
-				i--; //!!! On fait ça car le student indice i va etre remplace par le suivant et on doit aussi le controler!!!
+				db_remove(data_base, i); //Here lsize-- is executed
+				printf("Student deleted with success\n");
+				i--; //Here we do that because the student index, i is replaced by the following student and we need to verify it too.
 			}
 		}
 	}
 	else{
-		throw invalid_argument("The data that you want to delete doesn't exist.");
+		query->status=QUERY_FAILURE;
+		printf("The data that you want to delete doesn't exist.\n");
 	}
 }
 
@@ -190,7 +199,8 @@ void update(string filter_field ,string value ,string modified_field ,char* new_
 		}
 	}
 	else{
-		throw invalid_argument("The data that you want to change doesn't exist.");
+		query->status=QUERY_FAILURE;
+		printf("The data that you want to change doesn't exist.\n");
 	}
 }
 
@@ -199,7 +209,7 @@ void query_result_init(query_result_t* result, const char* query) {
 	clock_gettime(CLOCK_REALTIME, &now);
 	result->start_ns = now.tv_nsec + 1e9 * now.tv_sec;
 	result->status = QUERY_SUCCESS;
-	snprintf(result->query, sizeof(query), "%s", query);
+	snprintf(result->query, 256, "%s", query);
 	result->lsize = 0;
 	result->psize = sizeof(student_t)*100;
 	result->students = (student_t*) malloc(sizeof(student_t)*100);
@@ -209,36 +219,15 @@ void query_result_add(query_result_t* result, student_t s){
 	if (result->lsize*sizeof(student_t) == result->psize){query_result_extend_memory(result);}
 	result->students[result->lsize] = s;
 	result->lsize++;
+
 }
 
 void query_result_extend_memory(query_result_t *res){
 	student_t* temp = NULL;
-	temp = new student_t[10*(res->psize)];
+	temp = (student_t*) malloc(10*(res->psize));
 	memcpy(temp, res->students, sizeof(student_t)*res->lsize);
 	free(res->students);
 	res->students = temp;
 	res->psize = 10*res->psize;
 }
 
-void query_result_log(query_result_t *query, const char* file_path){
-	FILE *file = fopen(file_path, "w");
-	if (file != NULL){
-		fputs("Etudiants concernés", file);
-		for (size_t i=0; i<query->lsize; i++){
-			char temp[1000];
-			student_to_str(temp, &query->students[i]);
-			fputs(temp, file);
-		}
-		char temp[356];
-		snprintf(temp, 356, "Query status : %i\n", query->status);
-		fputs(temp, file);
-		snprintf(temp, 356, "Query request : %s\n", query->query);
-		fputs(temp, file);
-		snprintf(temp, 356, "Query start time : %li\n", query->start_ns);
-		fputs(temp, file);
-		snprintf(temp, 356, "Query end time : %li\n", query->end_ns);
-		fputs(temp, file);
-		fclose(file);
-	}
-	else{perror(file_path);}
-}

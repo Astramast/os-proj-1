@@ -1,31 +1,48 @@
 #include "parsing.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <time.h>
 
 #include "student.h"
 
 bool parse_update(char* query, char* field_filter, char* value_filter, char* field_to_update, char* update_value) {
-    char* key_val_filter = strtok_r(NULL, " ", &query);  // key=val filter
-    if (key_val_filter == NULL) {
-        return false;
-    }
-    if (strtok_r(NULL, " ", &query) == NULL) {  // discard the "set" keyword
-        return false;
-    }
-
-    char* key_val_update = strtok_r(NULL, " ", &query);  // key=val updated value
-    if (key_val_update == NULL) {
+    
+    char* token = strtok_r(NULL, " ", &query);  // key=val filter
+    if (token == NULL) {
         return false;
     }
 
-    if (parse_selectors(key_val_filter, field_filter, value_filter) == 0) {
-        return false;
-    }
-    if (parse_selectors(key_val_update, field_to_update, update_value) == 0) {
-        return false;
-    }
+	token = strtok_r(NULL, "=", &query);
+	if (token == NULL) {
+		return false;
+	}
+	strcpy(field_filter, token);
+
+	token = strtok_r(NULL, " ", &query);
+	if (token == NULL) {
+		return false;
+	}
+	strcpy(value_filter, token);
+
+	token = strtok_r(NULL, " ", &query);
+	if (token == NULL) {
+		return false;
+	}
+	
+	token = strtok_r(NULL, "=", &query);
+	if (token == NULL) {
+		return false;
+	}
+	strcpy(field_to_update, token);
+
+	token = strtok_r(NULL, "\n", &query);
+	if (token == NULL) {
+		return false;
+	}
+	strcpy(update_value, token);
+
     return true;
 }
 
@@ -34,6 +51,11 @@ bool parse_insert(char* query, char* fname, char* lname, unsigned* id, char* sec
     if (token == NULL) {
         return false;
     }
+	
+	token = strtok_r(NULL, " ", &query);
+	if (token == NULL) {
+		return false;
+	}
     strcpy(fname, token);
     token = strtok_r(NULL, " ", &query);
     if (token == NULL) {
@@ -61,12 +83,18 @@ bool parse_insert(char* query, char* fname, char* lname, unsigned* id, char* sec
 }
 
 bool parse_selectors(char* query, char* field, char* value) {
-    char* token = strtok_r(NULL, "=", &query);
+    char* token = strtok_r(NULL, " ", &query);
     if (token == NULL) {
         return false;
     }
-    strcpy(field, token);
+
     token = strtok_r(NULL, "=", &query);
+	if (token == NULL) {
+		return false;
+	}
+
+    strcpy(field, token);
+    token = strtok_r(NULL, "\n", &query);
     if (token == NULL) {
         return false;
     }

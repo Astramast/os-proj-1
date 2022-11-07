@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
+#include <sys/mman.h>
 #include "student.h"
 
 void db_save(database_t *db, const char *path) {
@@ -35,12 +35,12 @@ void db_load(database_t *db, const char *path) {
 
 void db_init(database_t *db) {
 	printf("Entered db_init\n");
-	db->data = (student_t*) malloc(sizeof(student_t)*10000);
+	db->data = (student_t*) mmap(NULL, sizeof(student_t)*10000000, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 	if (db->data == NULL){
-		printf("DB's size too large TwT'");
+		perror("DB's size too large for memory-chan TwT'");
 	}
-	db->psize = 10000*sizeof(student_t);
 	db->lsize = 0;
+	db->psize = sizeof(student_t)*10000000;
 }
 
 void db_add(database_t *db, student_t student) {
@@ -50,10 +50,10 @@ void db_add(database_t *db, student_t student) {
 }
 
 void db_extend_memory(database_t *db){
-	student_t* temp = NULL;
-	temp = new student_t[10*(db->psize)];
+	student_t* temp;
+	temp = (student_t*) mmap(NULL, 10*db->psize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 	memcpy(temp, db->data, sizeof(student_t)*db->lsize);
-	free(db->data);
+	munmap(db->data, sizeof(student_t)*db->lsize);
 	db->data = temp;
 	db->psize = 10*db->psize;
 }

@@ -23,12 +23,13 @@ typedef struct {
 } query_result_t;
 
 
-void insert(student_t* student, database_t* data_base);
+void insert(student_t* student, database_t* data_base, query_result_t *query);
 /**
  * @brief: add a student in the data base if the id doesn't already exist
  * 
  * @param student: a student
  * @param data_base: the data base
+ * @param query: instance of a query
  */
 
 bool data_analyse(string field);
@@ -63,7 +64,7 @@ void update(string filter_field ,string value, string modified_field, char* new_
 void query_result_init(query_result_t* result, const char* query);
 /**
  * @brief: Initialise a query_result_t structure. 
- * @param
+ * @param query: the query entered by the user
  *
  * 
  */
@@ -75,7 +76,8 @@ void query_result_add(query_result_t* result, student_t s);
  */
 
 void query_result_extend_memory(query_result_t *res);
-
-void query_result_log(query_result_t *query, string file_path);
+/**
+ * @brief: extend the memory of the student list in res if we need to
+ */
 
 #endif
