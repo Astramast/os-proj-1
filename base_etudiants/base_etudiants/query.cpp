@@ -56,7 +56,6 @@ vector<student_t*> select(string field , string value, database_t* data_base, qu
 		for(unsigned long int i=0;i<data_base->lsize;i++){
 
 			if(field =="id"){
-				printf("ID VALUE: %s",value.c_str());
 				if(data_base->data[i].id == stoul(value)){
 					sort_student_list.push_back(&data_base->data[i]);
 					query_result_add(query, data_base->data[i]);
@@ -99,7 +98,6 @@ vector<student_t*> select(string field , string value, database_t* data_base, qu
 		query->status=QUERY_FAILURE;
 		printf("The data that you want to select doesn't exist.\n");
 	}
-	printf("Query status: %u\n",query->status);
 	return sort_student_list;
 }
 

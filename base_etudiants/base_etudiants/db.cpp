@@ -6,19 +6,6 @@
 #include <sys/mman.h>
 #include "student.h"
 
-
-void *create_shared_memory(size_t size) {
-	//size is the number of bytes allocate to the mmap
-	const int protection = PROT_READ | PROT_WRITE;
-
-	// The buffer will be shared (meaning other processes can access it), but
-	// anonymous (meaning third-party processes cannot obtain an address for it),
-	// so only this process and its children will be able to use it:
-	const int visibility = MAP_SHARED | MAP_ANONYMOUS;
-
-	return mmap(NULL, size, protection, visibility, -1, 0);
-}
-
 void db_save(database_t *db, const char *path) {
     FILE *f = fopen(path, "wb");
     if (!f) {
@@ -34,7 +21,7 @@ void db_save(database_t *db, const char *path) {
 
 void db_load(database_t *db, const char *path) {
 	printf("Entered db_load\n");
-    FILE *file = fopen(path, "rb");//bloque ici
+    FILE *file = fopen(path, "rb");
     if (!file) {
         perror("Could not open the DB file");
         exit(1);
@@ -48,10 +35,12 @@ void db_load(database_t *db, const char *path) {
 
 void db_init(database_t *db) {
 	printf("Entered db_init\n");
-	db->data = (student_t*) create_shared_memory(sizeof(student_t)*100);//bug peut etre ici
+	db->data = (student_t*) mmap(NULL, sizeof(student_t)*10000000, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 	if (db->data == NULL){
 		perror("DB's size too large for memory-chan TwT'");
 	}
+	db->lsize = 0;
+	db->psize = sizeof(student_t)*10000000;
 }
 
 void db_add(database_t *db, student_t student) {
@@ -61,14 +50,12 @@ void db_add(database_t *db, student_t student) {
 }
 
 void db_extend_memory(database_t *db){
-	printf("test");
-	student_t* old_value = db->data;
-	size_t old_psize = db->psize;
-	db->psize = db->psize * 2;
-	db->data = (student_t*)mmap(NULL, 10*(db->psize), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-	memcpy(db->data, old_value, old_psize*sizeof(student_t));
-	munmap(old_value, sizeof(old_value)*old_psize);
-
+	student_t* temp;
+	temp = (student_t*) mmap(NULL, 10*db->psize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+	memcpy(temp, db->data, sizeof(student_t)*db->lsize);
+	munmap(db->data, sizeof(student_t)*db->lsize);
+	db->data = temp;
+	db->psize = 10*db->psize;
 }
 
 void db_remove(database_t* db, int indice){
