@@ -7,6 +7,7 @@
 #include "parsing.h"
 #include "utils.h"
 #include <sys/wait.h>
+#include <sys/mman.h>
 
 bool END=false;
 bool USR1=false;
@@ -54,6 +55,9 @@ int main(int argc, char const *argv[]) {
     db_init(&db);
     db_load(&db, db_path);
 	
+	size_t* shared_lsize = (size_t*) mmap(NULL, sizeof(size_t), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+	*shared_lsize = db.lsize;
+
 	int sons[4];
 	int insert_pipe_father[2];
 	int insert_pipe_son[2];
@@ -127,7 +131,7 @@ int main(int argc, char const *argv[]) {
 				int query_number = identify_query(query);
 				if (query_number != -1){
 					safe_write(pipes[2*query_number][1], &query, sizeof(query_result_t));
-					sleep(1);
+					//sleep(1);
 				}
 
 				else{
@@ -145,6 +149,7 @@ int main(int argc, char const *argv[]) {
 			int state;
 			wait(&state);
 		}
+		db.lsize = *shared_lsize;
 		db_save(&db, db_path);
     	printf("Bye bye!\n");
 	}
@@ -159,6 +164,7 @@ int main(int argc, char const *argv[]) {
 					safe_write(my_write, &temp, sizeof(int));
 				}
 				else{
+					db.lsize = *shared_lsize;
 					printf("Running query %s\n", query.query);
 					char query_parsing[256];
 					strcpy(query_parsing, query.query);
@@ -212,7 +218,8 @@ int main(int argc, char const *argv[]) {
 					clock_gettime(CLOCK_REALTIME, &now);
 					query.end_ns = now.tv_nsec + 1e9 * now.tv_sec;
 					log_query(&query);
-					sleep(1);
+					*shared_lsize = db.lsize;
+					//sleep(1);
 				}
 			}
 		}

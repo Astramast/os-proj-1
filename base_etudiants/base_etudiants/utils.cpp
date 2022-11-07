@@ -17,7 +17,7 @@ size_t safe_read(int fd, void* buffer, size_t nbytes) {
 size_t safe_write(int fd, const void* buffer, size_t nbytes) {
     ssize_t bytes_written = write(fd, buffer, nbytes);
     if (bytes_written < 0) {
-        perror("write: ");
+        perror("write error: ");
         exit(1);
     }
     return (size_t)bytes_written;
