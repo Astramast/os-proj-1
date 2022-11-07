@@ -9,6 +9,12 @@
 #include <sys/wait.h>
 #include <sys/mman.h>
 
+/*
+Authors : 
+Installé Arthur Matricule 495303
+Kevin Issa Matricule 514550
+*/
+
 bool END=false;
 bool USR1=false;
 
