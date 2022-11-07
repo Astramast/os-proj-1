@@ -87,7 +87,7 @@ vector<student_t*> select(string field , string value, database_t* data_base, qu
 			}
 
 			else if(field =="birthdate"){
-				char* student_bd_temp=nullptr;
+				char student_bd_temp[256];
 				tm* student_tm = &data_base->data[i].birthdate;
 				strftime(student_bd_temp, 10, "%d/%m/%Y", student_tm);
 				if(student_bd_temp == value){
