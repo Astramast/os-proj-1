@@ -131,7 +131,7 @@ int main(int argc, char const *argv[]) {
 				int query_number = identify_query(query);
 				if (query_number != -1){
 					safe_write(pipes[2*query_number][1], &query, sizeof(query_result_t));
-					//sleep(1);
+					sleep(1);
 				}
 
 				else{
@@ -180,6 +180,7 @@ int main(int argc, char const *argv[]) {
 					struct tm birthdate;
 					int query_number=identify_query(query);
 					bool everything_fine=true;
+					printf("%i\n", query_number);
 			
 					if (query_number==0){
 						if (parse_insert(query_parsing, fname, lname, &id, section, &birthdate)){
@@ -194,8 +195,11 @@ int main(int argc, char const *argv[]) {
 						else {everything_fine = false;}
 					}
 					else if (query_number==1){
+						printf("Entered if\n");
 						if (parse_selectors(query_parsing, field, value)){
+							printf("Entered if parse\n");
 							select(field, value, &db, &query);
+							printf("Out of select\n");
 						}
 						else{everything_fine = false;}
 					}
@@ -214,12 +218,13 @@ int main(int argc, char const *argv[]) {
 					else{everything_fine=false;}
 					if (!everything_fine){printf("Wrong query argument given. Failed.\n");}
 					query.query[strcspn(query.query, "\n")]=0;
+					printf("HOP\n");
 					struct timespec now;
 					clock_gettime(CLOCK_REALTIME, &now);
 					query.end_ns = now.tv_nsec + 1e9 * now.tv_sec;
 					log_query(&query);
 					*shared_lsize = db.lsize;
-					//sleep(1);
+					sleep(1);
 				}
 			}
 		}

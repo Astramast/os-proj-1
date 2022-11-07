@@ -52,13 +52,16 @@ bool data_analyse(string field){
 vector<student_t*> select(string field , string value, database_t* data_base, query_result_t *query){
 
 	vector<student_t*>sort_student_list;
+	printf("ligne 55\n");
 	if(data_analyse(field)){
 		for(unsigned long int i=0;i<data_base->lsize;i++){
 
 			if(field =="id"){
 				if(data_base->data[i].id == stoul(value)){
 					sort_student_list.push_back(&data_base->data[i]);
+					printf("ligne 62\n");
 					query_result_add(query, data_base->data[i]);
+					printf("ligne 64\n");
 				}
 			}
 
@@ -219,11 +222,12 @@ void query_result_add(query_result_t* result, student_t s){
 	if (result->lsize*sizeof(student_t) == result->psize){query_result_extend_memory(result);}
 	result->students[result->lsize] = s;
 	result->lsize++;
+
 }
 
 void query_result_extend_memory(query_result_t *res){
 	student_t* temp = NULL;
-	temp = new student_t[10*(res->psize)];
+	temp = (student_t*) malloc(10*(res->psize));
 	memcpy(temp, res->students, sizeof(student_t)*res->lsize);
 	free(res->students);
 	res->students = temp;
