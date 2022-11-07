@@ -119,7 +119,6 @@ int main(int argc, char const *argv[]) {
 			int query_number = identify_query(query);
 
 			if (query_number == 4){
-				printf("its transaction\n");
 				is_transaction_on = true;
 			}
 
@@ -131,7 +130,6 @@ int main(int argc, char const *argv[]) {
 					int temp;
 					read(pipes[2*i+1][0], &temp, sizeof(int));
 				}
-				printf("OUT !\n");
 				is_transaction_on = false;
 			}
 			else{
@@ -164,9 +162,7 @@ int main(int argc, char const *argv[]) {
 			query_result_t query;
 			safe_read(my_read, &query, sizeof(query_result_t));
 			if (!END){
-				printf("Query : '%s'", query.query);
 				if (strcmp(query.query, "transaction ")==0){
-					printf("Yeah it is\n");
 					int temp;
 					safe_write(my_write, &temp, sizeof(int));
 				}
@@ -187,7 +183,6 @@ int main(int argc, char const *argv[]) {
 					struct tm birthdate;
 					int query_number=identify_query(query);
 					bool everything_fine=true;
-					printf("%i\n", query_number);
 			
 					if (query_number==0){
 						if (parse_insert(query_parsing, fname, lname, &id, section, &birthdate)){
@@ -202,11 +197,8 @@ int main(int argc, char const *argv[]) {
 						else {everything_fine = false;}
 					}
 					else if (query_number==1){
-						printf("Entered if\n");
 						if (parse_selectors(query_parsing, field, value)){
-							printf("Entered if parse\n");
 							select(field, value, &db, &query);
-							printf("Out of select\n");
 						}
 						else{everything_fine = false;}
 					}
@@ -225,7 +217,6 @@ int main(int argc, char const *argv[]) {
 					else{everything_fine=false;}
 					if (!everything_fine){printf("Wrong query argument given. Failed.\n");}
 					query.query[strcspn(query.query, "\n")]=0;
-					printf("HOP\n");
 					struct timespec now;
 					clock_gettime(CLOCK_REALTIME, &now);
 					query.end_ns = now.tv_nsec + 1e9 * now.tv_sec;
