@@ -40,16 +40,19 @@ int identify_query(query_result_t query){
 	if (strcmp(query_first_word, "update")==0){
 		return 3;
 	}
+	if (strcmp(query_first_word, "transaction")==0){
+		return 4;
+	}
 	return -1;
 }
 
 int main(int argc, char const *argv[]) {
 	printf("STARTING\n");
-    const char *db_path = argv[1];
-	if (strcmp(db_path, "")==0){
+	if (strcmp(argv[1], "")==0){
 		printf("No file given. Usage : ./tinydb <db_file_path>");
 		exit(-1);
 	}
+	const char *db_path = argv[1];
 	printf("Entered path : %s\n", db_path);
 	database_t db;
     db_init(&db);
@@ -111,14 +114,14 @@ int main(int argc, char const *argv[]) {
 				db_save(&db, db_path);
 			}
 
-			printf("%s", user_query);
-			if(strcmp(user_query,"transaction")==0){
-				printf("UDA");
-				is_transaction_on = true;
-			}
-
 			query_result_t query;
 			query_result_init(&query, user_query);
+			int query_number = identify_query(query);
+
+			if (query_number == 4){
+				printf("its transaction\n");
+				is_transaction_on = true;
+			}
 
 			if (is_transaction_on){
 				for (int i=0; i<4; i++){
@@ -128,10 +131,10 @@ int main(int argc, char const *argv[]) {
 					int temp;
 					read(pipes[2*i+1][0], &temp, sizeof(int));
 				}
+				printf("OUT !\n");
 				is_transaction_on = false;
 			}
 			else{
-				int query_number = identify_query(query);
 				if (query_number != -1){
 					safe_write(pipes[2*query_number][1], &query, sizeof(query_result_t));
 					sleep(1);
@@ -162,7 +165,9 @@ int main(int argc, char const *argv[]) {
 			query_result_t query;
 			safe_read(my_read, &query, sizeof(query_result_t));
 			if (!END){
-				if (strcmp(query.query, "transaction")==0){
+				printf("Query : '%s'", query.query);
+				if (strcmp(query.query, "transaction ")==0){
+					printf("Yeah it is\n");
 					int temp;
 					safe_write(my_write, &temp, sizeof(int));
 				}
