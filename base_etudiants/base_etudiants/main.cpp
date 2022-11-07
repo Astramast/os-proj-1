@@ -137,7 +137,6 @@ int main(int argc, char const *argv[]) {
 			else{
 				if (query_number != -1){
 					safe_write(pipes[2*query_number][1], &query, sizeof(query_result_t));
-					sleep(1);
 				}
 
 				else{
