@@ -34,5 +34,8 @@ size_t safe_write(int fd, const void *buffer, size_t nbytes);
  * @brief the result of a query.
  **/
 void log_query(query_result_t *result);
-
+/**
+ * @brief: Create a file with the data in bind with the query in the log folder.
+ * 
+ */
 #endif  // _UTILS_H
