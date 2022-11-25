@@ -18,6 +18,20 @@ Kevin Issa Matricule 514550
 bool END=false;
 bool USR1=false;
 
+struct data_storage{
+
+	char fname[64];
+	char lname[64];
+	char section[64];
+	char field[256];
+	char value[256];
+	char field_to_update[256];
+	char update_value[256];
+	unsigned id;
+	char query_parsing[256];
+
+};
+
 void sigint_handler(int received){
 	if (received == SIGINT){
 		END=true;
@@ -50,6 +64,48 @@ int identify_query(query_result_t query){
 		return 4;
 	}
 	return -1;
+}
+
+void execute_query(int query_number, data_storage* data, database_t* db, query_result_t* query){
+	bool everything_fine=true;
+	struct tm birthdate;
+	if (query_number==0){
+	
+		if (parse_insert(data->query_parsing, data->fname, data->lname, &data->id, data->section, &birthdate)){
+			student_t student;
+			student.id = data->id;
+			strcpy(student.fname, data->fname);
+			strcpy(student.lname, data->lname);
+			strcpy(student.section, data->section);
+			student.birthdate=birthdate;
+			insert(&student, db, query);
+		}
+		else {everything_fine = false;}
+	}
+
+	else if (query_number==1){
+		if (parse_selectors(data->query_parsing, data->field, data->value)){
+			select(data->field, data->value, db, query);
+		}
+		else{everything_fine = false;}
+	}
+
+	else if (query_number==2){
+		if (parse_selectors(data->query_parsing, data->field, data->value)){
+			delete_function(data->field, data->value, db, query);
+		}
+		else{everything_fine = false;}
+	}
+
+	else if (query_number==3){
+		if (parse_update(data->query_parsing, data->field, data->value, data->field_to_update, data->update_value)){
+			update(data->field, data->value, data->field_to_update, data->update_value, db, query);
+		}
+		else{everything_fine = false;}
+	}
+
+	else{everything_fine=false;}
+	if (!everything_fine){printf("Wrong query argument given. Failed.\n");}
 }
 
 int main(int argc, char const *argv[]) {
@@ -165,6 +221,7 @@ int main(int argc, char const *argv[]) {
 
 	else{//son
 		while (!END){
+			data_storage data;
 			query_result_t query;
 			safe_read(my_read, &query, sizeof(query_result_t));
 			if (!END){
@@ -175,53 +232,11 @@ int main(int argc, char const *argv[]) {
 				else{
 					db.lsize = *shared_lsize;
 					printf("Running query %s\n", query.query);
-					char query_parsing[256];
-					strcpy(query_parsing, query.query);
-					char fname[64];
-					char lname[64];
-					char section[64];
-					char field[256];
-					char value[256];
-					char field_to_update[256];
-					char update_value[256];
-			
-					unsigned id;
-					struct tm birthdate;
-					int query_number=identify_query(query);
-					bool everything_fine=true;
-			
-					if (query_number==0){
-						if (parse_insert(query_parsing, fname, lname, &id, section, &birthdate)){
-							student_t student;
-							student.id = id;
-							strcpy(student.fname, fname);
-							strcpy(student.lname, lname);
-							strcpy(student.section, section);
-							student.birthdate=birthdate;
-							insert(&student, &db,&query);
-						}
-						else {everything_fine = false;}
-					}
-					else if (query_number==1){
-						if (parse_selectors(query_parsing, field, value)){
-							select(field, value, &db, &query);
-						}
-						else{everything_fine = false;}
-					}
-					else if (query_number==2){
-						if (parse_selectors(query_parsing, field, value)){
-							delete_function(field, value, &db, &query);
-						}
-						else{everything_fine = false;}
-					}
-					else if (query_number==3){
-						if (parse_update(query_parsing, field, value, field_to_update, update_value)){
-							update(field, value, field_to_update, update_value, &db, &query);
-					}
-						else{everything_fine = false;}
-					}
-					else{everything_fine=false;}
-					if (!everything_fine){printf("Wrong query argument given. Failed.\n");}
+					strcpy(data.query_parsing, query.query);
+
+					int query_number=identify_query(query);//a garder
+					execute_query(query_number,&data, &db, &query);
+
 					query.query[strcspn(query.query, "\n")]=0;
 					struct timespec now;
 					clock_gettime(CLOCK_REALTIME, &now);
